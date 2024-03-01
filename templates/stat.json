@@ -1,0 +1,73 @@
+{
+    "type": "stat",
+    "title": "<panel-title>",
+    "gridPos": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+    },
+    "datasource": {
+      "uid": null,
+      "type": "<datasource-name>"
+    },
+    "id": 2,
+    "targets": [
+      {
+        "refId": "A",
+        "expr": "<metric>",
+        "range": true,
+        "instant": false,
+        "datasource": {
+          "type": "<datasource-name>",
+          "uid": null
+        },
+        "editorMode": "builder",
+        "legendFormat": "__auto",
+        "useBackend": false,
+        "disableTextWrap": false,
+        "fullMetaSearch": false,
+        "includeNullMetadata": true
+      }
+    ],
+    "options": {
+      "reduceOptions": {
+        "values": false,
+        "calcs": [
+          "lastNotNull"
+        ],
+        "fields": ""
+      },
+      "orientation": "auto",
+      "textMode": "auto",
+      "wideLayout": true,
+      "colorMode": "value",
+      "graphMode": "area",
+      "justifyMode": "auto",
+      "showPercentChange": false
+    },
+    "fieldConfig": {
+      "defaults": {
+        "unitScale": true,
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "value": null,
+              "color": "blue"
+            },
+            {
+              "value": 80,
+              "color": "red"
+            }
+          ]
+        },
+        "color": {
+          "mode": "thresholds"
+        }
+      },
+      "overrides": []
+    },
+    "pluginVersion": "10.3.3"
+  }

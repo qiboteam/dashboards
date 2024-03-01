@@ -1,0 +1,116 @@
+{
+    "datasource": {
+        "type": "<datasource-name>",
+        "uid": null
+    },
+    "fieldConfig": {
+        "defaults": {
+        "color": {
+            "mode": "palette-classic"
+        },
+        "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "<y-axis-label>",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+            "legend": false,
+            "tooltip": false,
+            "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+            "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+            "group": "A",
+            "mode": "none"
+            },
+            "thresholdsStyle": {
+            "mode": "off"
+            }
+        },
+        "mappings": [],
+        "thresholds": {
+            "mode": "absolute",
+            "steps": [
+            {
+                "color": "green",
+                "value": null
+            },
+            {
+                "color": "red",
+                "value": 80
+            }
+            ]
+        },
+        "unitScale": true
+        },
+        "overrides": [
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "<metric>"
+                },
+                "properties": [
+                {
+                    "id": "color",
+                    "value": {
+                        "fixedColor": "<color>",
+                        "mode": "fixed"
+                    }
+                }
+                ]
+            }
+        ]
+    },
+    "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+    },
+    "id": 1,
+    "options": {
+        "legend": {
+        "calcs": [],
+        "displayMode": "list",
+        "placement": "bottom",
+        "showLegend": true
+        },
+        "tooltip": {
+        "mode": "single",
+        "sort": "none"
+        }
+    },
+    "targets": [
+        {
+        "datasource": {
+            "type": "<datasource-name>",
+            "uid": null
+        },
+        "disableTextWrap": false,
+        "editorMode": "builder",
+        "expr": "<metric>",
+        "fullMetaSearch": false,
+        "includeNullMetadata": true,
+        "instant": false,
+        "legendFormat": "__auto",
+        "range": true,
+        "refId": "A",
+        "useBackend": false
+        }
+    ],
+    "title": "<panel-title>",
+    "type": "timeseries"
+}

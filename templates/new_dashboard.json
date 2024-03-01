@@ -1,0 +1,13 @@
+{
+    "dashboard": {
+        "id": null,
+        "uid": null,
+        "title": "<dashboard-title>",
+        "tags": [ "templated" ],
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "refresh": "60s",
+        "panels": []
+      },
+      "overwrite": true
+}
