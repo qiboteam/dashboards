@@ -25,11 +25,11 @@ if __name__ == "__main__":
             "panels": [
                 {
                     "function": create_time_series,
-                    "type": "prometheus",
+                    "type": ["prometheus"],
                     "title": "cpu time",
                     "axis_label": "cpu time",
-                    "metric": "process_cpu_seconds_total",
-                    "legend": "cpu seconds",
+                    "metric": ["process_cpu_seconds_total"],
+                    "legend": ["cpu seconds"],
                     "position": {
                         "x": 0,
                         "y": 2,
@@ -37,16 +37,16 @@ if __name__ == "__main__":
                         "h": 6,
                     },
                     "unit": "s",
-                    "color": {
+                    "color": [{
                         "fixedColor": "purple",
                         "mode": "fixed",
-                    }
+                    }]
                 },
                 {
                     "function": create_stat,
-                    "type": "prometheus",
+                    "type": ["prometheus"],
                     "title": "latest cpu time",
-                    "metric": "process_cpu_seconds_total",
+                    "metric": ["process_cpu_seconds_total"],
                     "position": {
                         "x": 0,
                         "y": 0,
@@ -64,11 +64,11 @@ if __name__ == "__main__":
                 },
                 {
                     "function": create_time_series,
-                    "type": "prometheus",
+                    "type": ["prometheus", "prometheus"],
                     "title": "virtual memory",
                     "axis_label": "virtual memory",
-                    "metric": "process_virtual_memory_bytes",
-                    "legend": "virtual memory",
+                    "metric": ["process_virtual_memory_bytes", "process_resident_memory_bytes"],
+                    "legend": ["virtual memory", "resident memory"],
                     "position": {
                         "x": 8,
                         "y": 2,
@@ -76,16 +76,21 @@ if __name__ == "__main__":
                         "h": 6,
                     },
                     "unit": "decbytes",
-                    "color": {
+                    "color": [{
                         "fixedColor": "blue",
                         "mode": "fixed",
-                    }
+                    },
+                    {
+                        "fixedColor": "red",
+                        "mode": "fixed",
+                    }]
                 },
                 {
                     "function": create_stat,
-                    "type": "prometheus",
+                    "type": ["prometheus", "prometheus"],
                     "title": "latest virtual memory",
-                    "metric": "process_virtual_memory_bytes",
+                    "legend": ["virtual memory", "resident memory"],
+                    "metric": ["process_virtual_memory_bytes", "process_resident_memory_bytes"],
                     "position": {
                         "x": 8,
                         "y": 0,

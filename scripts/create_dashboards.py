@@ -1,6 +1,7 @@
 import requests
 import json
 from pathlib import Path
+import copy
 
 from utils import grafana_url
 
@@ -9,17 +10,29 @@ def create_time_series(timeseries_plot):
     panel_template_path = Path(__file__).parents[1] / "templates" / "time_series.json"
 
     panel_template = json.loads(panel_template_path.read_text())
-    panel_template["datasource"]["type"] = timeseries_plot["type"]
-    panel_template["targets"][0]["datasource"]["type"] = timeseries_plot["type"]
-    panel_template["targets"][0]["expr"] = timeseries_plot["metric"]
-    panel_template["targets"][0]["legendFormat"] = timeseries_plot["legend"]
+    panel_template["datasource"]["type"] = timeseries_plot["type"][0]
+    targets_template = panel_template["targets"][0]
+    panel_template["targets"] = []
+    metrics = timeseries_plot["metric"]
+    for i, _ in enumerate(metrics):
+        metric_target_template = copy.deepcopy(targets_template)
+        metric_target_template["datasource"]["type"] = timeseries_plot["type"][i]
+        metric_target_template["expr"] = timeseries_plot["metric"][i]
+        metric_target_template["legendFormat"] = timeseries_plot["legend"][i]
+        metric_target_template["refId"] = chr(ord('a') + i)
+        panel_template["targets"].append(metric_target_template)
     panel_template["title"] = timeseries_plot["title"]
     panel_template["fieldConfig"]["defaults"]["custom"]["axisLabel"] = timeseries_plot["axis_label"]
     if "unit" in timeseries_plot:
         panel_template["fieldConfig"]["defaults"]["unit"] = timeseries_plot["unit"]
     if "color" in timeseries_plot:
-        panel_template["fieldConfig"]["overrides"][0]["matcher"]["options"] = timeseries_plot["metric"]
-        panel_template["fieldConfig"]["overrides"][0]["properties"][0]["value"] = timeseries_plot["color"]
+        color_template = panel_template["fieldConfig"]["overrides"][0]
+        panel_template["fieldConfig"]["overrides"] = []
+        for i, _ in enumerate(metrics):
+            metric_color_template = copy.deepcopy(color_template)
+            metric_color_template["matcher"]["options"] = timeseries_plot["metric"][i]
+            metric_color_template["properties"][0]["value"] = timeseries_plot["color"][i]
+            panel_template["fieldConfig"]["overrides"].append(metric_color_template)
 
     panel_template["gridPos"] = timeseries_plot["position"]
 
@@ -29,9 +42,18 @@ def create_stat(timeseries_plot):
     panel_template_path = Path(__file__).parents[1] / "templates" / "stat.json"
 
     panel_template = json.loads(panel_template_path.read_text())
-    panel_template["datasource"]["type"] = timeseries_plot["type"]
-    panel_template["targets"][0]["datasource"]["type"] = timeseries_plot["type"]
-    panel_template["targets"][0]["expr"] = timeseries_plot["metric"]
+    panel_template["datasource"]["type"] = timeseries_plot["type"][0]
+    targets_template = panel_template["targets"][0]
+    panel_template["targets"] = []
+    metrics = timeseries_plot["metric"]
+    for i, _ in enumerate(metrics):
+        metric_target_template = copy.deepcopy(targets_template)
+        metric_target_template["datasource"]["type"] = timeseries_plot["type"][i]
+        metric_target_template["expr"] = timeseries_plot["metric"][i]
+        if "legend" in timeseries_plot:
+            metric_target_template["legendFormat"] = timeseries_plot["legend"][i]
+        metric_target_template["refId"] = chr(ord('a') + i)
+        panel_template["targets"].append(metric_target_template)
     panel_template["title"] = timeseries_plot["title"]
     panel_template["gridPos"] = timeseries_plot["position"]
     if "unit" in timeseries_plot:
