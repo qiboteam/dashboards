@@ -10,4 +10,4 @@ COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-CMD sleep 15 && python3 scripts/main.py
+CMD python3 scripts/main.py
