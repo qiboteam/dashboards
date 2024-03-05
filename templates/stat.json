@@ -67,7 +67,23 @@
           "mode": "thresholds"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "matcher": {
+            "id": "byName",
+            "options": "<metric>"
+          },
+          "properties": [
+          {
+            "id": "color",
+            "value": {
+              "fixedColor": "<color>",
+              "mode": "fixed"
+            }
+          }
+        ]
+      }
+    ]
     },
     "pluginVersion": "10.3.3"
   }

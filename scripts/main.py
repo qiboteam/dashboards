@@ -61,6 +61,10 @@ if __name__ == "__main__":
                             "value": None,
                         },
                     ],
+                    "color": [{
+                        "fixedColor": "purple",
+                        "mode": "fixed",
+                    }]
                 },
                 {
                     "function": create_time_series,
@@ -105,6 +109,14 @@ if __name__ == "__main__":
                             "value": None,
                         },
                     ],
+                    "color": [{
+                        "fixedColor": "blue",
+                        "mode": "fixed",
+                    },
+                    {
+                        "fixedColor": "red",
+                        "mode": "fixed",
+                    }]
                 },
             ],
         },

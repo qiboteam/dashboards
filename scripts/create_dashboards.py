@@ -62,6 +62,14 @@ def create_stat(timeseries_plot):
         panel_template["fieldConfig"]["defaults"]["thresholds"]["steps"] = timeseries_plot["color_steps"]
     if "color_mode" in timeseries_plot:
         panel_template["options"]["colorMode"] = timeseries_plot["color_mode"]
+    if "color" in timeseries_plot:
+        color_template = panel_template["fieldConfig"]["overrides"][0]
+        panel_template["fieldConfig"]["overrides"] = []
+        for i, _ in enumerate(metrics):
+            metric_color_template = copy.deepcopy(color_template)
+            metric_color_template["matcher"]["options"] = timeseries_plot["metric"][i]
+            metric_color_template["properties"][0]["value"] = timeseries_plot["color"][i]
+            panel_template["fieldConfig"]["overrides"].append(metric_color_template)
 
     return panel_template
 
