@@ -6,33 +6,39 @@ import copy
 from utils import grafana_url
 
 
+def add_traces(template, parameters):
+    template["datasource"]["type"] = parameters["type"][0]
+    template["title"] = parameters["title"]
+    targets_template = template["targets"][0]
+    template["targets"] = []
+    metrics = parameters["metric"]
+    for i, _ in enumerate(metrics):
+        metric_target_template = copy.deepcopy(targets_template)
+        metric_target_template["datasource"]["type"] = parameters["type"][i]
+        metric_target_template["expr"] = parameters["metric"][i]
+        if "legend" in parameters:
+            metric_target_template["legendFormat"] = parameters["legend"][i]
+        metric_target_template["refId"] = chr(ord('a') + i)
+        template["targets"].append(metric_target_template)
+    if "unit" in parameters:
+        template["fieldConfig"]["defaults"]["unit"] = parameters["unit"]
+    if "color" in parameters:
+        color_template = template["fieldConfig"]["overrides"][0]
+        template["fieldConfig"]["overrides"] = []
+        for i, _ in enumerate(metrics):
+            metric_color_template = copy.deepcopy(color_template)
+            metric_color_template["matcher"]["options"] = parameters["metric"][i]
+            metric_color_template["properties"][0]["value"] = parameters["color"][i]
+            template["fieldConfig"]["overrides"].append(metric_color_template)
+    return template
+
+
 def create_time_series(timeseries_plot):
     panel_template_path = Path(__file__).parents[1] / "templates" / "time_series.json"
 
     panel_template = json.loads(panel_template_path.read_text())
-    panel_template["datasource"]["type"] = timeseries_plot["type"][0]
-    targets_template = panel_template["targets"][0]
-    panel_template["targets"] = []
-    metrics = timeseries_plot["metric"]
-    for i, _ in enumerate(metrics):
-        metric_target_template = copy.deepcopy(targets_template)
-        metric_target_template["datasource"]["type"] = timeseries_plot["type"][i]
-        metric_target_template["expr"] = timeseries_plot["metric"][i]
-        metric_target_template["legendFormat"] = timeseries_plot["legend"][i]
-        metric_target_template["refId"] = chr(ord('a') + i)
-        panel_template["targets"].append(metric_target_template)
-    panel_template["title"] = timeseries_plot["title"]
+    panel_template = add_traces(panel_template, timeseries_plot)
     panel_template["fieldConfig"]["defaults"]["custom"]["axisLabel"] = timeseries_plot["axis_label"]
-    if "unit" in timeseries_plot:
-        panel_template["fieldConfig"]["defaults"]["unit"] = timeseries_plot["unit"]
-    if "color" in timeseries_plot:
-        color_template = panel_template["fieldConfig"]["overrides"][0]
-        panel_template["fieldConfig"]["overrides"] = []
-        for i, _ in enumerate(metrics):
-            metric_color_template = copy.deepcopy(color_template)
-            metric_color_template["matcher"]["options"] = timeseries_plot["metric"][i]
-            metric_color_template["properties"][0]["value"] = timeseries_plot["color"][i]
-            panel_template["fieldConfig"]["overrides"].append(metric_color_template)
 
     panel_template["gridPos"] = timeseries_plot["position"]
 
@@ -42,34 +48,12 @@ def create_stat(timeseries_plot):
     panel_template_path = Path(__file__).parents[1] / "templates" / "stat.json"
 
     panel_template = json.loads(panel_template_path.read_text())
-    panel_template["datasource"]["type"] = timeseries_plot["type"][0]
-    targets_template = panel_template["targets"][0]
-    panel_template["targets"] = []
-    metrics = timeseries_plot["metric"]
-    for i, _ in enumerate(metrics):
-        metric_target_template = copy.deepcopy(targets_template)
-        metric_target_template["datasource"]["type"] = timeseries_plot["type"][i]
-        metric_target_template["expr"] = timeseries_plot["metric"][i]
-        if "legend" in timeseries_plot:
-            metric_target_template["legendFormat"] = timeseries_plot["legend"][i]
-        metric_target_template["refId"] = chr(ord('a') + i)
-        panel_template["targets"].append(metric_target_template)
-    panel_template["title"] = timeseries_plot["title"]
+    panel_template = add_traces(panel_template, timeseries_plot)
     panel_template["gridPos"] = timeseries_plot["position"]
-    if "unit" in timeseries_plot:
-        panel_template["fieldConfig"]["defaults"]["unit"] = timeseries_plot["unit"]
     if "color_steps" in timeseries_plot:
         panel_template["fieldConfig"]["defaults"]["thresholds"]["steps"] = timeseries_plot["color_steps"]
     if "color_mode" in timeseries_plot:
         panel_template["options"]["colorMode"] = timeseries_plot["color_mode"]
-    if "color" in timeseries_plot:
-        color_template = panel_template["fieldConfig"]["overrides"][0]
-        panel_template["fieldConfig"]["overrides"] = []
-        for i, _ in enumerate(metrics):
-            metric_color_template = copy.deepcopy(color_template)
-            metric_color_template["matcher"]["options"] = timeseries_plot["metric"][i]
-            metric_color_template["properties"][0]["value"] = timeseries_plot["color"][i]
-            panel_template["fieldConfig"]["overrides"].append(metric_color_template)
 
     return panel_template
 
