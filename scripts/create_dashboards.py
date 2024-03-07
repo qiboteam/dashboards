@@ -1,8 +1,8 @@
-import requests
+import copy
 import json
 from pathlib import Path
-import copy
 
+import requests
 from utils import grafana_url
 
 
@@ -16,9 +16,18 @@ def add_traces(template, parameters):
         metric_target_template = copy.deepcopy(targets_template)
         metric_target_template["datasource"]["type"] = parameters["type"][i]
         metric_target_template["expr"] = parameters["metric"][i]
+        if "label_filters" in parameters:
+            if len(parameters["label_filters"][i]) > 0:
+                metric_target_template["expr"] += "{"
+                for filter in parameters["label_filters"][i]:
+                    filter[-1] = rf'"{filter[-1]}"'
+                    metric_target_template["expr"] += "".join(filter)
+                    metric_target_template["expr"] += ", "
+                metric_target_template["expr"] = metric_target_template["expr"][:-2]
+                metric_target_template["expr"] += "}"
         if "legend" in parameters:
             metric_target_template["legendFormat"] = parameters["legend"][i]
-        metric_target_template["refId"] = chr(ord('a') + i)
+        metric_target_template["refId"] = chr(ord("a") + i)
         template["targets"].append(metric_target_template)
     if "unit" in parameters:
         template["fieldConfig"]["defaults"]["unit"] = parameters["unit"]
@@ -27,7 +36,9 @@ def add_traces(template, parameters):
         template["fieldConfig"]["overrides"] = []
         for i, _ in enumerate(metrics):
             metric_color_template = copy.deepcopy(color_template)
-            metric_color_template["matcher"]["options"] = parameters["metric"][i]
+            metric_color_template["matcher"]["options"] = parameters["legend"][i]
+            if parameters["color"][i]["mode"] == "absolute":
+                metric_color_template["properties"][0]["id"] = "thresholds"
             metric_color_template["properties"][0]["value"] = parameters["color"][i]
             template["fieldConfig"]["overrides"].append(metric_color_template)
     return template
@@ -38,11 +49,14 @@ def create_time_series(timeseries_plot):
 
     panel_template = json.loads(panel_template_path.read_text())
     panel_template = add_traces(panel_template, timeseries_plot)
-    panel_template["fieldConfig"]["defaults"]["custom"]["axisLabel"] = timeseries_plot["axis_label"]
+    panel_template["fieldConfig"]["defaults"]["custom"]["axisLabel"] = timeseries_plot[
+        "axis_label"
+    ]
 
     panel_template["gridPos"] = timeseries_plot["position"]
 
     return panel_template
+
 
 def create_stat(timeseries_plot):
     panel_template_path = Path(__file__).parents[1] / "templates" / "stat.json"
@@ -51,7 +65,9 @@ def create_stat(timeseries_plot):
     panel_template = add_traces(panel_template, timeseries_plot)
     panel_template["gridPos"] = timeseries_plot["position"]
     if "color_steps" in timeseries_plot:
-        panel_template["fieldConfig"]["defaults"]["thresholds"]["steps"] = timeseries_plot["color_steps"]
+        panel_template["fieldConfig"]["defaults"]["thresholds"]["steps"] = (
+            timeseries_plot["color_steps"]
+        )
     if "color_mode" in timeseries_plot:
         panel_template["options"]["colorMode"] = timeseries_plot["color_mode"]
 
@@ -65,4 +81,9 @@ def create_dashboard(dashboard_properties, panels: list = None, http_headers=Non
     dashboard_template = json.loads(template_path.read_text())
     dashboard_template["dashboard"]["title"] = dashboard_properties["title"]
     dashboard_template["dashboard"]["panels"] = panels
-    requests.request("POST", grafana_url("dashboards/db"), data=json.dumps(dashboard_template), headers=http_headers)
+    requests.request(
+        "POST",
+        grafana_url("dashboards/db"),
+        data=json.dumps(dashboard_template),
+        headers=http_headers,
+    )
