@@ -20,8 +20,10 @@ services:
       - my_network
     volumes:
       - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway
@@ -33,3 +35,6 @@ services:
 networks:
   my_network:
     driver: bridge
+
+volumes:
+    prometheus_data: {}
