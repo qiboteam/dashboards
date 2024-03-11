@@ -1,6 +1,4 @@
-
 actions:
-
   - id: t1
     priority: 00
     operation: t1_signal
@@ -10,7 +8,6 @@ actions:
       delay_before_readout_end: 100000
       delay_before_readout_step: 2500
       nshots: 1024
-
   - id: t2
     priority: 10
     operation: t2_signal
@@ -20,7 +17,6 @@ actions:
       delay_between_pulses_end: 100000
       delay_between_pulses_step: 2500
       nshots: 1024
-
   - id: readout characterization
     priority: 20
     # main: standard rb bootstrap
