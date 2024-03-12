@@ -14,4 +14,4 @@ RUN pip install prometheus-client
 WORKDIR /app/monitoring
 
 WORKDIR /app
-CMD python3 scripts/main.py && qq auto monitoring/monitor.yml -o monitor/report -f && python3 monitoring/monitor-prometheus.py
+CMD python3 scripts/main.py && qq auto monitoring/monitor.yml -o monitoring/report -f && python3 monitoring/monitor-prometheus.py
