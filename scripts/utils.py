@@ -13,4 +13,5 @@ def grafana_port():
 
 
 def grafana_url(api_action):
-    return f"http://grafana:{grafana_port()}/api/{api_action}"
+    port = grafana_port()
+    return f"http://grafana:{port}/api/{api_action}"
