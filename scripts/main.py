@@ -11,12 +11,81 @@ HTTP_HEADERS = {
     "Content-Type": "application/json",
 }
 
+from dataclasses import dataclass
+from typing import Dict
+
+
+@dataclass
+class Metric:
+    metric: str
+    metric_filters: list[list[str]]
+    legend_name: str
+    db_type: str
+    color: Dict[str, str]
+
 
 if __name__ == "__main__":
     # create data sources
     data_sources = [{"name": "prometheus"}]
     for data_source in data_sources:
         create_data_source(data_source, http_headers=HTTP_HEADERS)
+
+    t1 = Metric(
+        "t1",
+        [["instance", "=", "pushgateway:9091"]],
+        "t1",
+        "prometheus",
+        {"fixedColor": "red", "mode": "fixed"},
+    )
+    t2 = Metric(
+        "t2",
+        [["instance", "=", "pushgateway:9091"]],
+        "t2",
+        "prometheus",
+        {"fixedColor": "blue", "mode": "fixed"},
+    )
+    assignment_fidelity = Metric(
+        "assignment_fidelity",
+        [["instance", "=", "pushgateway:9091"]],
+        "assignment fidelity",
+        "prometheus",
+        {"fixedColor": "green", "mode": "fixed"},
+    )
+    assignment_fidelity = Metric(
+        "assignment_fidelity",
+        [["instance", "=", "pushgateway:9091"]],
+        "assignment fidelity",
+        "prometheus",
+        {"fixedColor": "green", "mode": "fixed"},
+    )
+    assignment_fidelity_color_scale = Metric(
+        "assignment_fidelity",
+        [["instance", "=", "pushgateway:9091"]],
+        "assignment fidelity",
+        "prometheus",
+        {
+            "mode": "absolute",
+            "steps": [
+                {"color": "red", "value": None},
+                {"value": 0.50, "color": "orange"},
+                {"value": 0.80, "color": "green"},
+            ],
+        },
+    )
+    virtual_memory = Metric(
+        "process_virtual_memory_bytes",
+        [["instance", "=", "localhost:9090"]],
+        "virtual memory",
+        "prometheus",
+        {"fixedColor": "blue", "mode": "fixed"},
+    )
+    resident_memory = Metric(
+        "process_resident_memory_bytes",
+        [["instance", "=", "localhost:9090"]],
+        "resident memory",
+        "prometheus",
+        {"fixedColor": "red", "mode": "fixed"},
+    )
 
     # create dashboard with timeseries plot
     dashboards = [
@@ -25,19 +94,9 @@ if __name__ == "__main__":
             "panels": [
                 {
                     "function": create_time_series,
-                    "type": ["prometheus", "prometheus"],
                     "title": "",
                     "axis_label": "",
-                    "metric": ["t1", "t2"],
-                    "label_filters": [
-                        [
-                            ["instance", "=", "pushgateway:9091"],
-                        ],
-                        [
-                            ["instance", "=", "pushgateway:9091"],
-                        ],
-                    ],
-                    "legend": ["t1", "t2"],
+                    "metrics": [t1, t2],
                     "position": {
                         "x": 0,
                         "y": 2,
@@ -45,31 +104,11 @@ if __name__ == "__main__":
                         "h": 6,
                     },
                     "unit": "ns",
-                    "color": [
-                        {
-                            "fixedColor": "red",
-                            "mode": "fixed",
-                        },
-                        {
-                            "fixedColor": "blue",
-                            "mode": "fixed",
-                        },
-                    ],
                 },
                 {
                     "function": create_stat,
-                    "type": ["prometheus", "prometheus"],
                     "title": "Latest coherence times",
-                    "metric": ["t1", "t2"],
-                    "label_filters": [
-                        [
-                            ["instance", "=", "pushgateway:9091"],
-                        ],
-                        [
-                            ["instance", "=", "pushgateway:9091"],
-                        ],
-                    ],
-                    "legend": ["t1", "t2"],
+                    "metrics": [t1, t2],
                     "position": {
                         "x": 0,
                         "y": 0,
@@ -84,29 +123,12 @@ if __name__ == "__main__":
                             "value": None,
                         },
                     ],
-                    "color": [
-                        {
-                            "fixedColor": "red",
-                            "mode": "fixed",
-                        },
-                        {
-                            "fixedColor": "blue",
-                            "mode": "fixed",
-                        },
-                    ],
                 },
                 {
                     "function": create_time_series,
-                    "type": ["prometheus"],
                     "title": "",
                     "axis_label": "",
-                    "metric": ["assignment_fidelity"],
-                    "label_filters": [
-                        [
-                            ["instance", "=", "pushgateway:9091"],
-                        ],
-                    ],
-                    "legend": ["assignment fidelity"],
+                    "metrics": [assignment_fidelity],
                     "position": {
                         "x": 0,
                         "y": 10,
@@ -114,24 +136,11 @@ if __name__ == "__main__":
                         "h": 6,
                     },
                     "unit": "percentunit",
-                    "color": [
-                        {
-                            "fixedColor": "green",
-                            "mode": "fixed",
-                        }
-                    ],
                 },
                 {
                     "function": create_stat,
-                    "type": ["prometheus"],
                     "title": "Latest assignment fidelity",
-                    "metric": ["assignment_fidelity"],
-                    "label_filters": [
-                        [
-                            ["instance", "=", "pushgateway:9091"],
-                        ],
-                    ],
-                    "legend": ["assignment fidelity"],
+                    "metrics": [assignment_fidelity_color_scale],
                     "position": {
                         "x": 0,
                         "y": 8,
@@ -146,35 +155,12 @@ if __name__ == "__main__":
                             "value": None,
                         },
                     ],
-                    "color": [
-                        {
-                            "mode": "absolute",
-                            "steps": [
-                                {"color": "red", "value": None},
-                                {"value": 0.50, "color": "orange"},
-                                {"value": 0.80, "color": "green"},
-                            ],
-                        }
-                    ],
                 },
                 {
                     "function": create_time_series,
-                    "type": ["prometheus", "prometheus"],
                     "title": "virtual memory",
                     "axis_label": "virtual memory",
-                    "metric": [
-                        "process_virtual_memory_bytes",
-                        "process_resident_memory_bytes",
-                    ],
-                    "label_filters": [
-                        [
-                            ["instance", "=", "localhost:9090"],
-                        ],
-                        [
-                            ["instance", "=", "localhost:9090"],
-                        ],
-                    ],
-                    "legend": ["virtual memory", "resident memory"],
+                    "metrics": [virtual_memory, resident_memory],
                     "position": {
                         "x": 8,
                         "y": 2,
@@ -182,34 +168,11 @@ if __name__ == "__main__":
                         "h": 6,
                     },
                     "unit": "decbytes",
-                    "color": [
-                        {
-                            "fixedColor": "blue",
-                            "mode": "fixed",
-                        },
-                        {
-                            "fixedColor": "red",
-                            "mode": "fixed",
-                        },
-                    ],
                 },
                 {
                     "function": create_stat,
-                    "type": ["prometheus", "prometheus"],
                     "title": "latest virtual memory",
-                    "legend": ["virtual memory", "resident memory"],
-                    "metric": [
-                        "process_virtual_memory_bytes",
-                        "process_resident_memory_bytes",
-                    ],
-                    "label_filters": [
-                        [
-                            ["instance", "=", "localhost:9090"],
-                        ],
-                        [
-                            ["instance", "=", "localhost:9090"],
-                        ],
-                    ],
+                    "metrics": [virtual_memory, resident_memory],
                     "position": {
                         "x": 8,
                         "y": 0,
@@ -222,16 +185,6 @@ if __name__ == "__main__":
                         {
                             "color": "blue",
                             "value": None,
-                        },
-                    ],
-                    "color": [
-                        {
-                            "fixedColor": "blue",
-                            "mode": "fixed",
-                        },
-                        {
-                            "fixedColor": "red",
-                            "mode": "fixed",
                         },
                     ],
                 },

@@ -7,40 +7,40 @@ from utils import grafana_url
 
 
 def add_traces(template, parameters):
-    template["datasource"]["type"] = parameters["type"][0]
+    template["datasource"]["type"] = parameters["metrics"][0].db_type
     template["title"] = parameters["title"]
+
     targets_template = template["targets"][0]
     template["targets"] = []
-    metrics = parameters["metric"]
-    for i, _ in enumerate(metrics):
+    color_template = template["fieldConfig"]["overrides"][0]
+    template["fieldConfig"]["overrides"] = []
+
+    for i, metric in enumerate(parameters["metrics"]):
         metric_target_template = copy.deepcopy(targets_template)
-        metric_target_template["datasource"]["type"] = parameters["type"][i]
-        metric_target_template["expr"] = parameters["metric"][i]
-        if "label_filters" in parameters:
-            if len(parameters["label_filters"][i]) > 0:
-                metric_target_template["expr"] += "{"
-                for filter in parameters["label_filters"][i]:
-                    filter[-1] = rf'"{filter[-1]}"'
-                    metric_target_template["expr"] += "".join(filter)
-                    metric_target_template["expr"] += ", "
-                metric_target_template["expr"] = metric_target_template["expr"][:-2]
-                metric_target_template["expr"] += "}"
-        if "legend" in parameters:
-            metric_target_template["legendFormat"] = parameters["legend"][i]
+        metric_target_template["datasource"]["type"] = metric.db_type
+        metric_target_template["expr"] = metric.metric
+
+        if len(metric.metric_filters) > 0:
+            metric_target_template["expr"] += "{"
+            for filter in metric.metric_filters:
+                filter[-1] = rf'"{filter[-1]}"'
+                metric_target_template["expr"] += "".join(filter)
+                metric_target_template["expr"] += ", "
+            metric_target_template["expr"] = metric_target_template["expr"][:-2]
+            metric_target_template["expr"] += "}"
+        metric_target_template["legendFormat"] = metric.legend_name
         metric_target_template["refId"] = chr(ord("a") + i)
         template["targets"].append(metric_target_template)
+
+        metric_color_template = copy.deepcopy(color_template)
+        metric_color_template["matcher"]["options"] = metric.legend_name
+        if metric.color["mode"] == "absolute":
+            metric_color_template["properties"][0]["id"] = "thresholds"
+        metric_color_template["properties"][0]["value"] = metric.color
+        template["fieldConfig"]["overrides"].append(metric_color_template)
+
     if "unit" in parameters:
         template["fieldConfig"]["defaults"]["unit"] = parameters["unit"]
-    if "color" in parameters:
-        color_template = template["fieldConfig"]["overrides"][0]
-        template["fieldConfig"]["overrides"] = []
-        for i, _ in enumerate(metrics):
-            metric_color_template = copy.deepcopy(color_template)
-            metric_color_template["matcher"]["options"] = parameters["legend"][i]
-            if parameters["color"][i]["mode"] == "absolute":
-                metric_color_template["properties"][0]["id"] = "thresholds"
-            metric_color_template["properties"][0]["value"] = parameters["color"][i]
-            template["fieldConfig"]["overrides"].append(metric_color_template)
     return template
 
 
