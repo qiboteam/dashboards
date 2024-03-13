@@ -39,6 +39,14 @@ services:
         condition: service_healthy
     networks:
       - my_network
+  grafana_setup:
+    build: grafana/.
+    container_name: grafana_setup
+    depends_on:
+      grafana:
+        condition: service_healthy
+    networks:
+      - my_network
 networks:
   my_network:
     driver: bridge

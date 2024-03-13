@@ -1,0 +1,7 @@
+{
+    "name":"<datasource-name>",
+    "type":"<datasource-type>",
+    "url":"<datasource-url>",
+    "access":"proxy",
+    "basicAuth":false
+}
