@@ -6,7 +6,7 @@ import requests
 from utils import grafana_url
 
 
-def create_datasource(data_source: Dict[str, str], http_headers: Dict[str, str]):
+def create(data_source: Dict[str, str], http_headers: Dict[str, str]):
     """Create a new datasource.
 
     Args:

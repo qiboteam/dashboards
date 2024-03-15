@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
+import datasources
 from api_key import GRAFANA_KEY
-from create_datasources import create_datasource
 
 HTTP_HEADERS = {
     "Authorization": f"Bearer {GRAFANA_KEY}",
@@ -18,4 +18,4 @@ if __name__ == "__main__":
     )
     data_sources = json.loads(datasource_configuration_path.read_text())
     for data_source in data_sources:
-        create_datasource(data_source, http_headers=HTTP_HEADERS)
+        datasources.create(data_source, http_headers=HTTP_HEADERS)
