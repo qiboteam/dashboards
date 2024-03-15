@@ -1,8 +1,7 @@
 import json
-from pathlib import Path
 
 import requests
-from utils import grafana_url
+from utils import TEMPLATES_PATH, grafana_url
 
 
 def create(data_source: dict[str, str], http_headers: dict[str, str]):
@@ -12,7 +11,7 @@ def create(data_source: dict[str, str], http_headers: dict[str, str]):
         data_source (dict[str, str]): overridden values of the new datasource.
         http_headers (dict[str, str]): http headers for the request containing the API key.
     """
-    template_path = Path(__file__).parents[1] / "templates" / "datasource.json"
+    template_path = TEMPLATES_PATH / "datasource.json"
 
     datasource_template = json.loads(template_path.read_text())
     for key, value in data_source.items():
