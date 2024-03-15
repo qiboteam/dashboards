@@ -1,12 +1,11 @@
 import json
 from pathlib import Path
-from typing import Dict
 
 import requests
 from utils import grafana_url
 
 
-def create(data_source: Dict[str, str], http_headers: Dict[str, str]):
+def create(data_source: dict[str, str], http_headers: dict[str, str]):
     """Create a new datasource.
 
     Args:
