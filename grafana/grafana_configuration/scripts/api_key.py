@@ -1,5 +1,5 @@
 import requests
-from utils import GRAFANA_CONTAINER_NAME, GRAFANA_PORT
+from grafana_configuration.scripts.utils import GRAFANA_CONTAINER_NAME, GRAFANA_PORT
 
 headers = {
     "Content-Type": "application/json",
