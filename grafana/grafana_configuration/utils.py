@@ -11,5 +11,5 @@ def grafana_url(api_action: str) -> str:
     return f"http://{GRAFANA_CONTAINER_NAME}:{GRAFANA_PORT}/api/{api_action}"
 
 
-TEMPLATES_PATH = Path(__file__).parents[1] / "templates"
+TEMPLATES_PATH = Path(__file__).parent / "templates"
 """Path of the directory containing json templates used for grafana."""

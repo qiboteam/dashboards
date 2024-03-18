@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from grafana_configuration.scripts import datasources
-from grafana_configuration.scripts.api_key import GRAFANA_KEY
+from grafana_configuration import datasources
+from grafana_configuration.api_key import GRAFANA_KEY
 
 HTTP_HEADERS = {
     "Authorization": f"Bearer {GRAFANA_KEY}",

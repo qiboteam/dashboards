@@ -1,7 +1,8 @@
 import json
 
 import requests
-from grafana_configuration.scripts.utils import TEMPLATES_PATH, grafana_url
+
+from .utils import TEMPLATES_PATH, grafana_url
 
 
 def create(data_source: dict[str, str], http_headers: dict[str, str]):
