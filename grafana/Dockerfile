@@ -7,4 +7,4 @@ COPY . /app
 WORKDIR /app
 RUN pip install . --break-system-packages
 
-CMD python3 -m grafana_configuration
+CMD python3 -m grafana_configuration --users $GRAFANA_USERS --admin $ADMIN_PASSWORD

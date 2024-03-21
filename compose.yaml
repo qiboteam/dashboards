@@ -45,6 +45,8 @@ services:
     depends_on:
       grafana:
         condition: service_healthy
+    env_file:
+      - .env
     networks:
       - my_network
 networks:

@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 
@@ -14,6 +15,11 @@ HTTP_HEADERS = {
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--admin", type=str, nargs="?", default=None)
+    parser.add_argument("--users", type=str, nargs="?", default=None)
+    args = parser.parse_args()
+
     # create defined datasources
     datasource_configuration_path = (
         Path(__file__).parent / "config" / "datasources.json"
@@ -22,15 +28,9 @@ if __name__ == "__main__":
     for data_source in data_sources:
         datasources.create(data_source, http_headers=HTTP_HEADERS)
 
-    # configuration files for all users can be saved in separate files (e.g. json)
-    user_configurations = [
-        {
-            "login": "newuser",
-            "password": "newpassword",
-        },
-    ]
-    # it cannot be explicitly exposed in python
-    admin_password = "123456"
-    for user_configuration in user_configurations:
-        create_users(user_configuration)
-    change_admin_password(admin_password)
+    if args.users is not None:
+        user_configurations = json.loads(args.users)
+        for user_configuration in user_configurations:
+            create_users(user_configuration)
+    if args.admin is not None:
+        change_admin_password(args.admin)
