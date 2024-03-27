@@ -1,11 +1,11 @@
 import argparse
 import json
-from pathlib import Path
 
 from grafana_configuration import datasources
 
 from .api_key import grafana_key
 from .users import change_admin_password, create_users
+from .utils import DATASOURCE_CONFIGURATION_PATH
 
 HTTP_HEADERS = {
     "Authorization": f"Bearer {grafana_key()}",
@@ -21,10 +21,7 @@ def main():
     args = parser.parse_args()
 
     # create defined datasources
-    datasource_configuration_path = (
-        Path(__file__).parent / "config" / "datasources.json"
-    )
-    data_sources = json.loads(datasource_configuration_path.read_text())
+    data_sources = json.loads(DATASOURCE_CONFIGURATION_PATH.read_text())
     for data_source in data_sources:
         datasources.create(data_source, http_headers=HTTP_HEADERS)
 
