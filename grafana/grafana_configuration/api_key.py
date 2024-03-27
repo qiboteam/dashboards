@@ -1,6 +1,6 @@
 import requests
 
-from .utils import GRAFANA_URL
+from .utils import ADMIN_PASSWORD, ADMIN_USERNAME, GRAFANA_URL
 
 API_CREATION_HTTP_HEADERS = {
     "Content-Type": "application/json",
@@ -17,7 +17,7 @@ def find_admin_account_id() -> int:
         f"{GRAFANA_URL}/serviceaccounts",
         headers=API_CREATION_HTTP_HEADERS,
         json=admin_id_json_data,
-        auth=("admin", "admin"),
+        auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
     )
     return response.json()["id"]
 
@@ -34,6 +34,6 @@ def grafana_key() -> str:
         f"{GRAFANA_URL}/serviceaccounts/{account_id}/tokens",
         headers=API_CREATION_HTTP_HEADERS,
         json=token_json_data,
-        auth=("admin", "admin"),
+        auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
     )
     return response.json()["key"]
