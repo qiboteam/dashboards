@@ -4,11 +4,11 @@ from pathlib import Path
 
 from grafana_configuration import datasources
 
-from .api_key import GRAFANA_KEY
+from .api_key import grafana_key
 from .users import change_admin_password, create_users
 
 HTTP_HEADERS = {
-    "Authorization": f"Bearer {GRAFANA_KEY}",
+    "Authorization": f"Bearer {grafana_key()}",
     "Accept": "application/json",
     "Content-Type": "application/json",
 }
