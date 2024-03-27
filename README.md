@@ -17,3 +17,13 @@ Currently the following containers are created:
  - `pushgateway` containing https://github.com/prometheus/pushgateway server, exposing port `9091`.
  It can be used for sending metrics, which will then be scraped by Prometheus.
  - `monitoring` containing a Ubuntu image with `qibocal` to be restarted at regular intervals for acquiring QPU metrics.
+
+## Grafana users
+
+By default grafana only creates an account with admin privileges with username `admin` and password `admin`.
+Its password can be changed and other users may be created by setting environment variables in a `.env` file placed at the root of this repository.
+A `.env` file will look like this:
+``` bash
+ADMIN_PASSWORD=new_admin_password
+GRAFANA_USERS='[{"login":"first_user","password":"first_password"}, {"login":"second_user","password":"second_password","role":"Editor"}]'
+```
