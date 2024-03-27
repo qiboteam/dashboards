@@ -20,8 +20,7 @@ def create_users(user_config: dict[str, str]):
     """
     from .utils import grafana_url
 
-    requests.request(
-        "POST",
+    requests.post(
         "http://admin:admin@grafana:3000/api/admin/users",
         data=json.dumps(user_config),
         headers={"Content-Type": "application/json"},
