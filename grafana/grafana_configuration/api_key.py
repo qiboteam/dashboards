@@ -1,6 +1,6 @@
 import requests
 
-from .utils import GRAFANA_CONTAINER_NAME, GRAFANA_PORT
+from .utils import GRAFANA_URL
 
 headers = {
     "Content-Type": "application/json",
@@ -12,7 +12,7 @@ json_data = {
 }
 
 response = requests.post(
-    f"http://{GRAFANA_CONTAINER_NAME}:{GRAFANA_PORT}/api/serviceaccounts",
+    f"{GRAFANA_URL}/serviceaccounts",
     headers=headers,
     json=json_data,
     auth=("admin", "admin"),
@@ -23,7 +23,7 @@ json_data = {
     "name": "setup_grafana-token",
 }
 response = requests.post(
-    f"http://{GRAFANA_CONTAINER_NAME}:{GRAFANA_PORT}/api/serviceaccounts/{account_id}/tokens",
+    f"{GRAFANA_URL}/serviceaccounts/{account_id}/tokens",
     headers=headers,
     json=json_data,
     auth=("admin", "admin"),

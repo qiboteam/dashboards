@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from .utils import TEMPLATES_PATH, grafana_url
+from .utils import GRAFANA_URL, TEMPLATES_PATH
 
 
 def create(data_source: dict[str, str], http_headers: dict[str, str]):
@@ -17,9 +17,8 @@ def create(data_source: dict[str, str], http_headers: dict[str, str]):
     datasource_template = json.loads(template_path.read_text())
     for key, value in data_source.items():
         datasource_template[key] = value
-    requests.request(
-        "POST",
-        grafana_url("datasources"),
+    requests.post(
+        f"{GRAFANA_URL}/datasources",
         data=json.dumps(datasource_template),
         headers=http_headers,
     )
