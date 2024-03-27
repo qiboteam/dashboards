@@ -11,5 +11,12 @@ def grafana_url(api_action: str) -> str:
     return f"http://{GRAFANA_CONTAINER_NAME}:{GRAFANA_PORT}/api/{api_action}"
 
 
+def grafana_url_authenticated(
+    api_action: str, username: str = "admin", password: str = "admin"
+) -> str:
+    """Url of the api for the grafana container with basic user authentication."""
+    return f"http://{username}:{password}@{GRAFANA_CONTAINER_NAME}:{GRAFANA_PORT}/api/{api_action}"
+
+
 TEMPLATES_PATH = Path(__file__).parent / "templates"
 """Path of the directory containing json templates used for grafana."""

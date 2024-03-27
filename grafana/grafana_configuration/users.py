@@ -2,6 +2,8 @@ import json
 
 import requests
 
+from .utils import grafana_url_authenticated
+
 
 def create_users(user_config: dict[str, str]):
     """Create grafana users.
@@ -18,24 +20,20 @@ def create_users(user_config: dict[str, str]):
         user_config (dict[str, str]): usernames, passwords
             and permissions of users to be created.
     """
-    from .utils import grafana_url
-
     requests.post(
-        "http://admin:admin@grafana:3000/api/admin/users",
+        f"{grafana_url_authenticated()}/admin/users",
         data=json.dumps(user_config),
         headers={"Content-Type": "application/json"},
     )
     if "role" in user_config:
-        user_data = requests.request(
-            "GET",
-            f"http://admin:admin@grafana:3000/api/users/lookup?loginOrEmail={user_config['login']}",
+        user_data = requests.get(
+            f"{grafana_url_authenticated()}/users/lookup?loginOrEmail={user_config['login']}",
             data=json.dumps(user_config),
             headers={"Content-Type": "application/json"},
         ).text
         user_id = json.loads(user_data)["id"]
-        requests.request(
-            "PATCH",
-            f"http://admin:admin@grafana:3000/api/orgs/1/users/{user_id}",
+        requests.patch(
+            f"{grafana_url_authenticated()}/orgs/1/users/{user_id}",
             data=json.dumps(user_config),
             headers={"Content-Type": "application/json"},
         )
@@ -48,9 +46,8 @@ def change_admin_password(new_password: str):
         new_password (str): new password for the grafana admin user.
     """
     user_config = {"password": new_password}
-    requests.request(
-        "PUT",
-        "http://admin:admin@grafana:3000/api/admin/users/1/password",
+    requests.put(
+        f"{grafana_url_authenticated()}/admin/users/1/password",
         data=json.dumps(user_config),
         headers={"Content-Type": "application/json"},
     )
