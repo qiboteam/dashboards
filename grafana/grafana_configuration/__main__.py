@@ -14,7 +14,7 @@ HTTP_HEADERS = {
 }
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--admin", type=str, nargs="?", default=None)
     parser.add_argument("--users", type=str, nargs="?", default=None)
@@ -34,3 +34,7 @@ if __name__ == "__main__":
             create_users(user_configuration)
     if args.admin is not None:
         change_admin_password(args.admin)
+
+
+if __name__ == "__main__":
+    main()
