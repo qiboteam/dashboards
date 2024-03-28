@@ -23,6 +23,24 @@
                                 }
                             ]
                         }
+                    },
+                    {
+                        "type": "Stat",
+                        "value": {
+                            "title": "stat title",
+                            "grid_pos": {"x":0, "y":0, "w": 8, "h": 8},
+                            "unit": "s",
+                            "targets": [
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "process_cpu_seconds_total{instance=\"localhost:9090\"}",
+                                        "legendFormat": "cpu time"
+                                    }
+                                }
+                            ]
+                        }
                     }
                 ]
             }
