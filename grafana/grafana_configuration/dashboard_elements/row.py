@@ -5,7 +5,12 @@ from .utils import GridPos
 
 @dataclass
 class Row:
-    """Dashboard row, containing panels."""
+    """Dashboard row, containing panels.
+
+    Rows are a good way to organize panels in the dashboard, keeping panel order
+    even if browser's window size changes (e.g. in mobile mode).
+    Rows can be collapsed, hiding their panels.
+    """
 
     title: str
     """Name of the row displayed in grafana."""
