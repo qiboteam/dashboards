@@ -23,6 +23,7 @@ class TimeSeries(glc.TimeSeries):
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
+        self.overrides = [target.override() for target in self.targets]
         panel_dictionary = super().to_json_data()
         if self.grid_pos is None:
             raise ValueError("Panel grid position must be set.")
@@ -39,6 +40,7 @@ class Stat(glc.Stat):
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
+        self.overrides = [target.override() for target in self.targets]
         panel_dictionary = super().to_json_data()
         if self.grid_pos is None:
             raise ValueError("Panel grid position must be set.")

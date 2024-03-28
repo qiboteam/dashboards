@@ -18,7 +18,8 @@
                                     "value": {
                                         "datasource": "prometheus",
                                         "expr": "process_cpu_seconds_total{instance=\"localhost:9090\"}",
-                                        "legendFormat": "cpu time"
+                                        "legendFormat": "cpu time",
+                                        "color": "blue"
                                     }
                                 }
                             ]
@@ -36,7 +37,8 @@
                                     "value": {
                                         "datasource": "prometheus",
                                         "expr": "process_cpu_seconds_total{instance=\"localhost:9090\"}",
-                                        "legendFormat": "cpu time"
+                                        "legendFormat": "cpu time",
+                                        "thresholds": [["blue", null], ["red", 0.5]]
                                     }
                                 }
                             ]

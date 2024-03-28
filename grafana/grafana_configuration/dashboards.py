@@ -2,8 +2,9 @@ import json
 
 import grafanalib.core as glc
 import requests
+from grafana_configuration.dashboard_elements.panels import Stat, TimeSeries
 from grafana_configuration.dashboard_elements.row import Row
-from grafana_configuration.dashboard_elements.timeseries import Stat, TimeSeries
+from grafana_configuration.dashboard_elements.targets import Target
 from grafana_configuration.dashboard_elements.utils import GridPos
 from grafanalib._gen import DashboardEncoder
 
@@ -56,7 +57,7 @@ class Dashboard(glc.Dashboard):
         class_lookup = {
             "TimeSeries": TimeSeries,
             "Stat": Stat,
-            "Target": glc.Target,
+            "Target": Target,
         }
         dashboard = cls(title=dashboard_configuration["title"])
         if "rows" in dashboard_configuration:
