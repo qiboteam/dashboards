@@ -1,5 +1,11 @@
 [
     {
-        "title": "My first dashboard"
+        "title": "My first dashboard",
+        "rows": [
+            {
+                "title": "First row",
+                "grid_pos": {"x":0, "y":0}
+            }
+        ]
     }
 ]
