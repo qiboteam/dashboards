@@ -30,8 +30,26 @@ class Dashboard(glc.Dashboard):
     def add_row(self, row: Row):
         """Add row to the dashboards.
 
-        TODO: add also panels in the row."""
+        TODO: add also panels in the row.
+        Args:
+            row (Row): row element of the dashboard. It can contain dashboard panels.
+        """
         self.panels.append(row)
+
+    @classmethod
+    def from_json_configuration(cls, dashboard_configuration: dict):
+        """Create a dashboard object from a configuration dictionary.
+
+        Args:
+            dashboard_configuration (dict): parameters of the new dashboard
+                that are set and then exported to grafana.
+        """
+        dashboard = cls(title=dashboard_configuration["title"])
+        if "rows" in dashboard_configuration:
+            for row in dashboard_configuration["rows"]:
+                dashboard_row = Row(row["title"], GridPos(**row["grid_pos"]))
+                dashboard.add_row(dashboard_row)
+        return dashboard
 
 
 def create(dashboard_configuration: dict, http_headers: dict[str, str]):
@@ -42,12 +60,7 @@ def create(dashboard_configuration: dict, http_headers: dict[str, str]):
             that are set and then exported to grafana.
         http_headers (dict[str, str]): http headers for the request containing the API key.
     """
-    # TODO: move it to a dedicated class method
-    dashboard = Dashboard(title=dashboard_configuration["title"])
-    if "rows" in dashboard_configuration:
-        for row in dashboard_configuration["rows"]:
-            dashboard_row = Row(row["title"], GridPos(**row["grid_pos"]))
-            dashboard.add_row(dashboard_row)
+    dashboard = Dashboard.from_json_configuration(dashboard_configuration)
     requests.post(
         f"{GRAFANA_URL}/dashboards/db",
         data=dashboard.to_json(),
