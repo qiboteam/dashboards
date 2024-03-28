@@ -3,6 +3,7 @@ import json
 import grafanalib.core as glc
 import requests
 from grafana_configuration.dashboard_elements.row import Row
+from grafana_configuration.dashboard_elements.timeseries import TimeSeries
 from grafana_configuration.dashboard_elements.utils import GridPos
 from grafanalib._gen import DashboardEncoder
 
@@ -30,11 +31,12 @@ class Dashboard(glc.Dashboard):
     def add_row(self, row: Row):
         """Add row to the dashboards.
 
-        TODO: add also panels in the row.
         Args:
             row (Row): row element of the dashboard. It can contain dashboard panels.
         """
         self.panels.append(row)
+        for panel in row.panels:
+            self.panels.append(panel)
 
     @classmethod
     def from_json_configuration(cls, dashboard_configuration: dict):
@@ -44,10 +46,26 @@ class Dashboard(glc.Dashboard):
             dashboard_configuration (dict): parameters of the new dashboard
                 that are set and then exported to grafana.
         """
+        class_lookup = {
+            "TimeSeries": TimeSeries,
+            "Target": glc.Target,
+        }
         dashboard = cls(title=dashboard_configuration["title"])
         if "rows" in dashboard_configuration:
             for row in dashboard_configuration["rows"]:
                 dashboard_row = Row(row["title"], GridPos(**row["grid_pos"]))
+                if "panels" in row:
+                    for panel in row["panels"]:
+                        panel_class = class_lookup[panel["type"]]
+                        grid_pos = GridPos(**panel["value"]["grid_pos"])
+                        panel["value"]["grid_pos"] = grid_pos
+                        dashboard_targets = []
+                        for target in panel["value"]["targets"]:
+                            target_class = class_lookup[target["type"]]
+                            dashboard_targets.append(target_class(**target["value"]))
+                        panel["value"]["targets"] = dashboard_targets
+                        dashboard_panel = panel_class(**panel["value"])
+                        dashboard_row.add(dashboard_panel)
                 dashboard.add_row(dashboard_row)
         return dashboard
 

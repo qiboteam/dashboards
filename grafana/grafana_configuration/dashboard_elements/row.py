@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+import grafanalib.core as glc
 
 from .utils import GridPos
 
@@ -16,6 +18,12 @@ class Row:
     """Name of the row displayed in grafana."""
     grid_pos: GridPos
     """xy position of the row in the dashboard (width and height default to (24,1))."""
+    panels: list[glc.Panel] = field(default_factory=list)
+    """List of grafana panels contained in the row."""
+
+    def add(self, panel):
+        """Add panel to the row."""
+        self.panels.append(panel)
 
     def to_json_data(self) -> dict:
         """Convert the row into a dictionary for grafana."""
