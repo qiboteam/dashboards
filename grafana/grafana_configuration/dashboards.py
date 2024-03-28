@@ -13,8 +13,15 @@ from .utils import GRAFANA_URL
 class Dashboard(glc.Dashboard):
     """Wrapper class of `grafanalib.core.Dashboard`."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, timezone: str = "browser", **kwargs):
+        """Create an empty dashboard.
+
+        Args:
+            timezone (str): timezone used by plots.
+                supported values: "browser", "utc" (default for grafanalib),
+                "" (default for grafana), region/city or region/state/city
+        """
+        super().__init__(*args, timezone=timezone, **kwargs)
 
     def to_json(self) -> str:
         """Convert dashboard into a json string ready to be imported in grafana."""
