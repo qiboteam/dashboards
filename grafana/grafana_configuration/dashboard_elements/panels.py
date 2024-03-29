@@ -34,8 +34,24 @@ class TimeSeries(glc.TimeSeries):
 class Stat(glc.Stat):
     """Wrapper class of `grafanalib.core.Stat`."""
 
-    def __init__(self, *args, unit: str = "", grid_pos: GridPos = None, **kwargs):
-        super().__init__(*args, format=unit, **kwargs)
+    def __init__(
+        self,
+        *args,
+        unit: str = "",
+        grid_pos: GridPos = None,
+        colorMode: str = "background",
+        **kwargs
+    ):
+        """Initialize object.
+
+        Args:
+            colorMode (str): supported values are
+                - "value" (default for grafanalib): color only numbers and units
+                - "background": color background (with gradient)
+                - "background_solid": color background (without gradient)
+                - "none": no color
+        """
+        super().__init__(*args, format=unit, colorMode=colorMode, **kwargs)
         self.grid_pos = grid_pos
 
     def to_json_data(self):
