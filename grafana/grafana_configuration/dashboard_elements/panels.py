@@ -24,11 +24,7 @@ class TimeSeries(glc.TimeSeries):
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
         self.overrides = [target.override() for target in self.targets]
-        panel_dictionary = super().to_json_data()
-        if self.grid_pos is None:
-            raise ValueError("Panel grid position must be set.")
-        panel_dictionary["gridPos"] = self.grid_pos.__dict__
-        return panel_dictionary
+        return set_panel_position(self)
 
 
 class Stat(glc.Stat):
@@ -40,25 +36,46 @@ class Stat(glc.Stat):
         unit: str = "",
         grid_pos: GridPos = None,
         colorMode: str = "background",
+        reduceCalc: str = "last",
         **kwargs
     ):
         """Initialize object.
 
         Args:
             colorMode (str): supported values are
-                - "value" (default for grafanalib): color only numbers and units
                 - "background": color background (with gradient)
+                - "value" (default for grafanalib): color only numbers and units
                 - "background_solid": color background (without gradient)
                 - "none": no color
+            reduceCalc (str): supported values are
+                - "last": display the last value of the time series (including nan).
+                - "lastNotNull": display the last not null value of the time series.
+                - "mean" (default for grafanalib): display the mean of the values.
+                - "stdDev": display the standard deviation of the values.
         """
-        super().__init__(*args, format=unit, colorMode=colorMode, **kwargs)
+        super().__init__(
+            *args, format=unit, colorMode=colorMode, reduceCalc=reduceCalc, **kwargs
+        )
         self.grid_pos = grid_pos
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
         self.overrides = [target.override() for target in self.targets]
-        panel_dictionary = super().to_json_data()
-        if self.grid_pos is None:
-            raise ValueError("Panel grid position must be set.")
-        panel_dictionary["gridPos"] = self.grid_pos.__dict__
-        return panel_dictionary
+        return set_panel_position(self)
+
+
+from typing import Union
+
+OverriddenPanel = Union[Stat, TimeSeries]
+
+
+def set_panel_position(panel: OverriddenPanel):
+    """Add panel grid position to the json dictionary of the panel.
+
+    If the panel position is not set
+    """
+    panel_dictionary = super(type(panel), panel).to_json_data()
+    if panel.grid_pos is None:
+        raise ValueError("Panel grid position must be set.")
+    panel_dictionary["gridPos"] = panel.grid_pos.__dict__
+    return panel_dictionary
