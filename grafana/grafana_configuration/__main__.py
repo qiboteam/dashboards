@@ -26,8 +26,8 @@ def main():
         datasources.create(data_source, http_headers=HTTP_HEADERS)
 
     dashboards_configurations = json.loads(DASHBOARD_CONFIGURATION_PATH.read_text())
-    for dashboards_configuration in dashboards_configurations:
-        dashboards.create(dashboards_configuration, http_headers=HTTP_HEADERS)
+    for dash in dashboards_configurations:
+        dashboards.create(dash, http_headers=HTTP_HEADERS)
 
     if args.users is not None:
         user_configurations = json.loads(args.users)
