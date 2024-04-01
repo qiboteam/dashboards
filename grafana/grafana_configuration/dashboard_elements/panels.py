@@ -23,7 +23,6 @@ class TimeSeries(glc.TimeSeries):
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
-        self.overrides = [target.override() for target in self.targets]
         return set_panel_position(self)
 
 
@@ -60,7 +59,6 @@ class Stat(glc.Stat):
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
-        self.overrides = [target.override() for target in self.targets]
         return set_panel_position(self)
 
 
@@ -73,6 +71,9 @@ def set_panel_position(panel: OverriddenPanel):
     Panel position must be set, otherwise grafana throws a generic error.
     If the panel position is not set, raise an error.
     """
+    # set customized colors and styles in the panel
+    panel.overrides = [target.override() for target in panel.targets]
+
     panel_dictionary = super(type(panel), panel).to_json_data()
     if panel.grid_pos is None:
         raise ValueError("Panel grid position must be set.")
