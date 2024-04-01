@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 import grafanalib.core as glc
 
@@ -64,15 +64,14 @@ class Stat(glc.Stat):
         return set_panel_position(self)
 
 
-from typing import Union
-
 OverriddenPanel = Union[Stat, TimeSeries]
 
 
 def set_panel_position(panel: OverriddenPanel):
     """Add panel grid position to the json dictionary of the panel.
 
-    If the panel position is not set
+    Panel position must be set, otherwise grafana throws a generic error.
+    If the panel position is not set, raise an error.
     """
     panel_dictionary = super(type(panel), panel).to_json_data()
     if panel.grid_pos is None:
