@@ -24,6 +24,7 @@ class Dashboard(glc.Dashboard):
         """
         super().__init__(*args, timezone=timezone, **kwargs)
 
+    @property
     def to_json(self) -> str:
         """Convert dashboard into a json string ready to be imported in grafana."""
         return json.dumps(
@@ -90,6 +91,6 @@ def create(dashboard_configuration: dict, http_headers: dict[str, str]):
     dashboard = Dashboard.from_json_configuration(dashboard_configuration)
     requests.post(
         f"{GRAFANA_URL}/dashboards/db",
-        data=dashboard.to_json(),
+        data=dashboard.to_json,
         headers=http_headers,
     )
