@@ -28,8 +28,8 @@ def get_data():
                 / "results.json"
             )
         )
-        t1.set(path_t1["t1"][n])
-        t2.set(path_t2["t2"][n])
+        t1.set(path_t1["t1"][n][0])
+        t2.set(path_t2["t2"][n][0])
         fidelity.set(path_fidelity["assignment_fidelity"][n])
     push_to_gateway("pushgateway:9091", job="pushgateway", registry=registry)
 
