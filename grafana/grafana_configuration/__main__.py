@@ -1,11 +1,11 @@
 import argparse
 import json
 
-from grafana_configuration import datasources
+from grafana_configuration import dashboards, datasources
 
 from .api_key import grafana_key
 from .users import change_admin_password, create_users
-from .utils import DATASOURCE_CONFIGURATION_PATH
+from .utils import DASHBOARD_CONFIGURATION_PATH, DATASOURCE_CONFIGURATION_PATH
 
 HTTP_HEADERS = {
     "Authorization": f"Bearer {grafana_key()}",
@@ -24,6 +24,10 @@ def main():
     data_sources = json.loads(DATASOURCE_CONFIGURATION_PATH.read_text())
     for data_source in data_sources:
         datasources.create(data_source, http_headers=HTTP_HEADERS)
+
+    dashboards_configurations = json.loads(DASHBOARD_CONFIGURATION_PATH.read_text())
+    for dash in dashboards_configurations:
+        dashboards.create(dash, http_headers=HTTP_HEADERS)
 
     if args.users is not None:
         user_configurations = json.loads(args.users)

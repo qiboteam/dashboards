@@ -1,0 +1,113 @@
+[
+    {
+        "title": "My first dashboard",
+        "rows": [
+            {
+                "title": "First row",
+                "grid_pos": {"x":0, "y":0},
+                "panels": [
+                    {
+                        "type": "TimeSeries",
+                        "value": {
+                            "title": "timeseries title",
+                            "grid_pos": {"x":0, "y":1, "w": 8, "h": 8},
+                            "unit": "s",
+                            "targets": [
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "process_cpu_seconds_total{instance=\"localhost:9090\"}",
+                                        "legendFormat": "cpu time",
+                                        "color": "blue"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Stat",
+                        "value": {
+                            "title": "stat title",
+                            "grid_pos": {"x":8, "y":1, "w": 8, "h": 8},
+                            "unit": "s",
+                            "targets": [
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "process_cpu_seconds_total{instance=\"localhost:9090\"}",
+                                        "legendFormat": "cpu time",
+                                        "thresholds": [["blue", null], ["red", 0.5]]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "title": "Second row",
+                "grid_pos": {"x":0, "y":9},
+                "panels": [
+                    {
+                        "type": "TimeSeries",
+                        "value": {
+                            "title": "",
+                            "grid_pos": {"x":0, "y":12, "w": 8, "h": 6},
+                            "unit": "s",
+                            "targets": [
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "process_cpu_seconds_total{instance=\"localhost:9090\"}",
+                                        "legendFormat": "9090",
+                                        "color": "red"
+                                    }
+                                },
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "process_cpu_seconds_total{instance=\"pushgateway:9091\"}",
+                                        "legendFormat": "9091",
+                                        "color": "yellow"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Stat",
+                        "value": {
+                            "title": "cpu time",
+                            "grid_pos": {"x":0, "y":10, "w": 8, "h": 2},
+                            "unit": "s",
+                            "targets": [
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "process_cpu_seconds_total{instance=\"localhost:9090\"}",
+                                        "legendFormat": "9090",
+                                        "color": "red"
+                                    }
+                                },
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "process_cpu_seconds_total{instance=\"pushgateway:9091\"}",
+                                        "legendFormat": "9091",
+                                        "color": "yellow"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

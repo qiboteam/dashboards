@@ -5,6 +5,7 @@ build-backend = "hatchling.build"
 name = "grafana_configuration"
 version = "0.0.1"
 dependencies = [
+    "grafanalib",
     "pyyaml",
     "requests"
 ]

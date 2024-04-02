@@ -45,8 +45,9 @@ services:
     depends_on:
       grafana:
         condition: service_healthy
-    env_file:
-      - .env
+    environment:
+      GRAFANA_USERS: ${GRAFANA_USERS}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     networks:
       - my_network
 networks:
