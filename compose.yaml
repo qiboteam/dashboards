@@ -39,6 +39,15 @@ services:
         condition: service_healthy
     networks:
       - my_network
+  temperature:
+    build: temperature/.
+    container_name: temperature
+    environment:
+      CRYO_NAME: ${CRYO_NAME}
+      CRYO_IP: ${CRYO_IP}
+      CRYO_PORT: ${CRYO_PORT}
+    networks:
+      - my_network
   grafana_setup:
     build: grafana/.
     container_name: grafana_setup
