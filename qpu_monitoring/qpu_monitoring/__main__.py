@@ -34,7 +34,6 @@ def generate_monitoring_script(
     slurm_partition: str,
     qibolab_platform: str,
     slurm_script_path: Path,
-    report_save_path: Path,
 ):
     env = Environment(loader=FileSystemLoader(TEMPLATES))
     template = env.get_template("monitoring_template.sh")
@@ -58,14 +57,13 @@ def monitor_qpu(slurm_partition: str = None, qibolab_platform: str = "dummy"):
         slurm_partition,
         qibolab_platform,
         script_path / "slurm_qpu_monitor.sh",
-        report_save_path,
     )
     # run acquisition job on slurm
     if slurm_partition is None:
         subprocess.run([script_path / "monitor.sh"])
     else:
         # use sbatch
-        subprocess.run([script_path / "slurm_qpu_monitor.sh"])
+        subprocess.run([script_path / "slurm_qpu_monitor.sh"], cwd=script_path)
     # process acquired data
     export_metrics(report_save_path)
 
