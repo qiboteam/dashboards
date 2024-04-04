@@ -1,5 +1,6 @@
 import subprocess
 from dataclasses import dataclass
+from multiprocessing.pool import ThreadPool
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -52,30 +53,33 @@ def generate_monitoring_script(
 
 
 def monitor_qpu(job_info: SlurmJobInfo):
-    # generate slurm script
-    script_path = SLURM_JOBS / job_info.platform
-    report_save_path = REPORTS / job_info.platform
-    generate_slurm_script(job_info, script_path / "monitor.sh", report_save_path)
-    generate_monitoring_script(
-        job_info,
-        script_path / "slurm_qpu_monitor.sh",
-    )
-    # run acquisition job on slurm
-    if job_info.partition is None:
-        subprocess.run([script_path / "monitor.sh"])
-    else:
-        # use sbatch
-        subprocess.run([script_path / "slurm_qpu_monitor.sh"], cwd=script_path)
-    # process acquired data
-    export_metrics(report_save_path)
+    try:
+        # generate slurm script
+        script_path = SLURM_JOBS / job_info.platform
+        report_save_path = REPORTS / job_info.platform
+        generate_slurm_script(job_info, script_path / "monitor.sh", report_save_path)
+        generate_monitoring_script(
+            job_info,
+            script_path / "slurm_qpu_monitor.sh",
+        )
+        # run acquisition job on slurm
+        if job_info.partition is None:
+            subprocess.run([script_path / "monitor.sh"])
+        else:
+            # use sbatch
+            subprocess.run([script_path / "slurm_qpu_monitor.sh"], cwd=script_path)
+        # process acquired data
+        export_metrics(report_save_path)
+    except Exception:
+        pass
 
 
 def main():
     jobs = [
         SlurmJobInfo("slurm_partition", "qibolab_platform"),
     ]
-    for job in jobs:
-        monitor_qpu(job)
+    with ThreadPool(len(jobs)) as p:
+        p.map(monitor_qpu, jobs)
 
 
 if __name__ == "__main__":
