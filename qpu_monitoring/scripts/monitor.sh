@@ -18,19 +18,21 @@ else
     exit
 fi
 
+platform=$slurm_partition
+
 echo "#!/bin/bash" > monitoring_slurm_script
+echo "#SBATCH -J monitoring_${platform}" >> monitoring_slurm_script
 echo "#SBATCH -p ${slurm_partition}" >> monitoring_slurm_script
 echo "#SBATCH -o slurm.out" >> monitoring_slurm_script
 echo "" >> monitoring_slurm_script
 echo "qq auto ${runcard_path} -o ${report_path} -f" >> monitoring_slurm_script
 
-echo "python3 ${exporter_script_path}" > metrics_export_slurm_script
-
-# run both script with slurm
-# monitoring_job_id=$(sbatch --parsable monitoring_slurm_script)
-# sbatch --dependency=afterany:${monitoring_job_id} metrics_export_slurm_script
-
 # run the exporter locally
-sbatch -W --parsable monitoring_slurm_script
-wait
-python3 ${exporter_script_path}
+if [[ -z $(squeue -p ${slurm_partition} -u $USER -n monitoring_${platform} | sed '1d') ]];
+then
+    sbatch -W --parsable monitoring_slurm_script
+    wait
+    python3 ${exporter_script_path}
+else
+    echo "Another job is currently running for ${platform} on ${partition}"
+fi
