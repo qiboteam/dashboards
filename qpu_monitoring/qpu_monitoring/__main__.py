@@ -1,9 +1,9 @@
+import argparse
+import json
 import subprocess
 from dataclasses import dataclass
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-import argparse
-import json
 
 from jinja2 import Environment, FileSystemLoader
 
