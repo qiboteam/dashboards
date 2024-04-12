@@ -2,6 +2,8 @@ import subprocess
 from dataclasses import dataclass
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
+import argparse
+import json
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -75,9 +77,15 @@ def monitor_qpu(job_info: SlurmJobInfo):
 
 
 def main():
-    jobs = [
-        SlurmJobInfo("slurm_partition", "qibolab_platform"),
-    ]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--slurm_configuration", type=str, nargs="?", default=None)
+    args = parser.parse_args()
+    if args.slurm_configuration is None:
+        jobs = [SlurmJobInfo(None, None)]
+    else:
+        slurm_configuration = json.loads(args.slurm_configuration)
+        jobs = [SlurmJobInfo(**job_info) for job_info in slurm_configuration]
+
     with ThreadPool(len(jobs)) as p:
         p.map(monitor_qpu, jobs)
 
