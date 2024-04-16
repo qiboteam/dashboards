@@ -62,8 +62,6 @@ def monitor_qpu(job_info: SlurmJobInfo):
         script_path = SLURM_JOBS / platform
         report_save_path = REPORTS / platform
         # generate slurm script
-        script_path = SLURM_JOBS / job_info.platform
-        report_save_path = REPORTS / job_info.platform
         generate_slurm_script(job_info, script_path / "monitor.sh", report_save_path)
         generate_monitoring_script(
             job_info,
