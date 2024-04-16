@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run the exporter locally
-if [[ -z $(squeue -p {{ slurm_partition }} -u $USER -n monitoring_{{ platform }} | sed '1d') ]];
+if [[ $(squeue -p {{ slurm_partition }} -u '$USER' -n monitoring_{{ platform }} | sed '1d') == "" ]];
 then
     sbatch -W monitor.sh
     wait
