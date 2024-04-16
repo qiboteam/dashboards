@@ -56,6 +56,11 @@ def generate_monitoring_script(
 
 def monitor_qpu(job_info: SlurmJobInfo):
     try:
+        platform = job_info.platform
+        if platform is None:
+            platform = "dummy"
+        script_path = SLURM_JOBS / platform
+        report_save_path = REPORTS / platform
         # generate slurm script
         script_path = SLURM_JOBS / job_info.platform
         report_save_path = REPORTS / job_info.platform
