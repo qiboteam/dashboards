@@ -4,4 +4,4 @@
 #SBATCH -o slurm.out
 
 export QIBOLAB_PLATFORMS=~/qibolab_platforms_qrc
-qq auto {{ runcard_path }} -o {{ report_path }} -f
+qq auto {{ runcard_path }} --platform {{ platform }} -o {{ report_path }} -f
