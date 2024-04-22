@@ -29,10 +29,14 @@ def monitor_temperature(device_name: str, device_ip: str, device_port: int):
         push_to_gateway("pushgateway:9091", job="pushgateway", registry=registry)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", type=str, default="")
     parser.add_argument("--ip", type=str, default=None)
     parser.add_argument("--port", type=int, default=8888)
     args = parser.parse_args()
     monitor_temperature(args.name, args.ip, args.port)
+
+
+if __name__ == "__main__":
+    main()
