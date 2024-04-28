@@ -19,12 +19,14 @@ TEMPLATE_SCRIPT_NAMES = {
     "qpu_monitor_job.sh": "qpu_monitor_template.sh",
     "slurm_monitor_submit.sh": "slurm_submit_template.sh",
 }
+"""Names of the rendered templates."""
 
 
 @dataclass
 class SlurmJobInfo:
     partition: str
     platform: str
+    qibolab_platforms_path: Path
 
     def __post_init__(self):
         """If platform is set to None, default to "dummy"."""
@@ -44,6 +46,7 @@ def generate_monitoring_script(
         platform=job_info.platform,
         runcard_path=RUNCARD,
         report_path=report_save_path,
+        qibolab_platforms_path=job_info.qibolab_platforms_path,
     )
     monitoring_script_path.parent.mkdir(parents=True, exist_ok=True)
     monitoring_script_path.write_text(monitoring_script)
@@ -51,6 +54,11 @@ def generate_monitoring_script(
 
 
 def monitor_qpu(job_info: SlurmJobInfo):
+    """Run qpu monitoring.
+
+    If platform is set to dummy, do not use slurm and run
+    qq locally instead.
+    """
     try:
         script_path = SLURM_JOBS / job_info.platform
         report_save_path = REPORTS / job_info.platform
@@ -78,12 +86,16 @@ def monitor_qpu(job_info: SlurmJobInfo):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--slurm_configuration", type=str, nargs="?", default=None)
+    parser.add_argument("--qibolab_platforms_path", type=Path, nargs="?", default=None)
     args = parser.parse_args()
     if args.slurm_configuration is None:
-        jobs = [SlurmJobInfo(None, None)]
+        jobs = [SlurmJobInfo(None, None, args.qibolab_platforms_path)]
     else:
         slurm_configuration = json.loads(args.slurm_configuration)
-        jobs = [SlurmJobInfo(**job_info) for job_info in slurm_configuration]
+        jobs = [
+            SlurmJobInfo(**job_info, qibolab_platforms_path=args.qibolab_platforms_path)
+            for job_info in slurm_configuration
+        ]
 
     with ThreadPool(len(jobs)) as p:
         p.map(monitor_qpu, jobs)
