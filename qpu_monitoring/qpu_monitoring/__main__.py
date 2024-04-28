@@ -15,64 +15,60 @@ REPORTS = Path.home() / "monitoring_reports"
 SLURM_JOBS = Path.home() / "monitoring_jobs"
 
 
+TEMPLATE_SCRIPT_NAMES = {
+    "qpu_monitor_job.sh": "qpu_monitor_template.sh",
+    "slurm_monitor_submit.sh": "slurm_submit_template.sh",
+}
+
+
 @dataclass
 class SlurmJobInfo:
     partition: str
     platform: str
 
+    def __post_init__(self):
+        """If platform is set to None, default to "dummy"."""
+        if self.platform is None:
+            self.platform = "dummy"
 
-def generate_slurm_script(
+
+def generate_monitoring_script(
     job_info: SlurmJobInfo,
-    slurm_script_path: Path,
-    report_save_path: Path,
+    monitoring_script_path: Path,
+    report_save_path: Path = None,
 ):
     env = Environment(loader=FileSystemLoader(TEMPLATES))
-    template = env.get_template("slurm_template.sh")
-    slurm_monitoring_script = template.render(
+    template = env.get_template(TEMPLATE_SCRIPT_NAMES[monitoring_script_path.name])
+    monitoring_script = template.render(
         slurm_partition=job_info.partition,
         platform=job_info.platform,
         runcard_path=RUNCARD,
         report_path=report_save_path,
     )
-    slurm_script_path.parent.mkdir(parents=True, exist_ok=True)
-    slurm_script_path.write_text(slurm_monitoring_script)
-    slurm_script_path.chmod(0o744)
-
-
-def generate_monitoring_script(
-    job_info: SlurmJobInfo,
-    slurm_script_path: Path,
-):
-    env = Environment(loader=FileSystemLoader(TEMPLATES))
-    template = env.get_template("monitoring_template.sh")
-    slurm_monitoring_script = template.render(
-        slurm_partition=job_info.partition,
-        platform=job_info.platform,
-    )
-    slurm_script_path.parent.mkdir(parents=True, exist_ok=True)
-    slurm_script_path.write_text(slurm_monitoring_script)
-    slurm_script_path.chmod(0o744)
+    monitoring_script_path.parent.mkdir(parents=True, exist_ok=True)
+    monitoring_script_path.write_text(monitoring_script)
+    monitoring_script_path.chmod(0o744)
 
 
 def monitor_qpu(job_info: SlurmJobInfo):
     try:
-        platform = job_info.platform
-        if platform is None:
-            platform = "dummy"
-        script_path = SLURM_JOBS / platform
-        report_save_path = REPORTS / platform
-        # generate slurm script
-        generate_slurm_script(job_info, script_path / "monitor.sh", report_save_path)
+        script_path = SLURM_JOBS / job_info.platform
+        report_save_path = REPORTS / job_info.platform
         generate_monitoring_script(
             job_info,
-            script_path / "slurm_qpu_monitor.sh",
+            script_path / "slurm_monitor_submit.sh",
+        )
+        generate_monitoring_script(
+            job_info,
+            script_path / "qpu_monitor_job.sh",
+            report_save_path,
         )
         # run acquisition job on slurm
         if job_info.partition is None:
-            subprocess.run([script_path / "monitor.sh"])
+            subprocess.run([script_path / "qpu_monitor_job.sh"])
         else:
             # use sbatch
-            subprocess.run([script_path / "slurm_qpu_monitor.sh"], cwd=script_path)
+            subprocess.run([script_path / "slurm_monitor_submit.sh"], cwd=script_path)
         # process acquired data
         export_metrics(report_save_path)
     except Exception:
