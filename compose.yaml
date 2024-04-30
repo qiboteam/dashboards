@@ -11,6 +11,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    extra_hosts: ["host.docker.internal:host-gateway"]
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -24,6 +25,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    extra_hosts: ["host.docker.internal:host-gateway"]
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway

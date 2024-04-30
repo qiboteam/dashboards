@@ -107,6 +107,40 @@
                         }
                     }
                 ]
+            },
+            {
+                "title": "Third row",
+                "grid_pos": {"x":0, "y":19},
+                "panels": [
+                    {
+                        "type": "TimeSeries",
+                        "value": {
+                            "title": "",
+                            "grid_pos": {"x":0, "y":20, "w": 8, "h": 6},
+                            "unit": "ns",
+                            "targets": [
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "icarusq_iqm5q_t1{instance=\"pushgateway:9091\"}",
+                                        "legendFormat": "icarusq_iqm5q_t1",
+                                        "color": "red"
+                                    }
+                                },
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "prometheus",
+                                        "expr": "icarusq_iqm5q_t2{instance=\"pushgateway:9091\"}",
+                                        "legendFormat": "icarusq_iqm5q_t2",
+                                        "color": "yellow"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
             }
         ]
     }
