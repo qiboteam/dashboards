@@ -3,5 +3,18 @@
         "name": "prometheus",
         "type": "prometheus",
         "url": "http://prometheus:9090"
+    },
+    {
+	    "name": "ntu-qpu",
+	    "type": "postgres",
+	    "url": "host.docker.internal:5432",
+	    "user": "nqch_paul",
+	    "secureJsonData": {
+		    "password": "test123"
+	    },
+	    "jsonData": {
+		    "database": "ntu-qpu",
+		    "sslmode": "disable"
+	    }
     }
 ]
