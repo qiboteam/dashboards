@@ -31,12 +31,13 @@ services:
       - 9091:9091
     networks:
       - my_network
-  monitoring:
-    build: monitoring/.
-    container_name: monitoring
-    depends_on:
-      grafana:
-        condition: service_healthy
+  temperature:
+    build: temperature/.
+    container_name: temperature
+    environment:
+      CRYO_NAME: ${CRYO_NAME}
+      CRYO_IP: ${CRYO_IP}
+      CRYO_PORT: ${CRYO_PORT}
     networks:
       - my_network
   grafana_setup:
