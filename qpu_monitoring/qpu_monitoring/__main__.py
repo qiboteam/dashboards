@@ -78,8 +78,9 @@ def monitor_qpu(job_info: SlurmJobInfo):
             # use sbatch
             subprocess.run([script_path / "slurm_monitor_submit.sh"], cwd=script_path)
         # process acquired data
-        export_metrics(report_save_path)
-    except Exception:
+        export_metrics(report_save_path, export_database="postgres")
+    except Exception as e:
+        print(e)
         pass
 
 
