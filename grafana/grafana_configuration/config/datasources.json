@@ -7,12 +7,14 @@
     {
         "name": "postgres",
         "type": "postgres",
-        "url": "http://postgres:5432",
+        "url": "postgres:5432",
         "database": "qpu_metrics",
-        "basicAuth": true,
-        "basicAuthUser": "dash_admin",
+        "user": "dash_admin",
+        "jsonData": {
+            "sslmode": "disable"
+        },
         "secureJsonData": {
-          "basicAuthPassword": "dash_admin"
+            "password": "dash_admin"
         }
     }
 ]
