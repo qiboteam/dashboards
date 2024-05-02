@@ -56,9 +56,12 @@ def push_data_prometheus(platform: str, qpu_data: list[dict[str, Any]]):
     push_to_gateway("localhost:9091", job="pushgateway", registry=registry)
 
 
-def push_data_postgres(platform: str, qpu_data: list[dict[str, Any]]):
+def push_data_postgres(platform: str, qpu_data: list[dict[str, Any]], **kwargs):
+    credentials = f"{kwargs.pop('username')}:{kwargs.pop('password')}"
+    address = f"{kwargs.pop('container')}:{kwargs.pop('port')}"
+    database = kwargs.pop("database")
     engine = create_engine(
-        "postgresql+psycopg2://dash_admin:dash_admin@postgres:5432/qpu_metrics",
+        f"postgresql+psycopg2://{credentials}@{address}/{database}",
         echo=True,
     )
     Base.metadata.create_all(engine)
@@ -76,7 +79,9 @@ def push_data_postgres(platform: str, qpu_data: list[dict[str, Any]]):
             session.commit()
 
 
-def export_metrics(qibocal_output_folder: Path, export_database: str = "pushgateway"):
+def export_metrics(
+    qibocal_output_folder: Path, export_database: str = "pushgateway", **kwargs
+):
     platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
         "platform"
     ]
@@ -84,7 +89,7 @@ def export_metrics(qibocal_output_folder: Path, export_database: str = "pushgate
     if export_database == "pushgateway":
         push_data_prometheus(platform, qpu_data)
     elif export_database == "postgres":
-        push_data_postgres(platform, qpu_data)
+        push_data_postgres(platform, qpu_data, **kwargs)
     else:
         raise NotImplementedError
 
