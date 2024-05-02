@@ -1,6 +1,5 @@
 """Collect data from qibocal reports and upload them to prometheus."""
 
-import datetime as dt
 import json
 from pathlib import Path
 from typing import Any
@@ -8,43 +7,14 @@ from typing import Any
 import yaml
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from qibocal.auto.serialize import deserialize
-from sqlalchemy import DateTime, create_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
-from sqlalchemy.sql import func
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+from .database_schema import Base, Qubit
 
 
 def from_path(json_path: Path):
     return json.loads(json_path.read_text())
-
-
-class Base(DeclarativeBase):
-    pass
-
-
-class Qubit(Base):
-    __tablename__ = "qubit"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    """Primary key."""
-    qubit_id: Mapped[int]
-    """Qubit id."""
-    qpu_name: Mapped[str]
-    """QPU name."""
-    t1: Mapped[float]
-    """Qubit t1 in ns."""
-    t2: Mapped[float]
-    """Qubit t2 in ns."""
-    # t2_spin_echo: Mapped[float]
-    # """Qubit t2 spin echo in ns."""
-    assignment_fidelity: Mapped[float]
-    """Qubit assignment fidelity in the range [0,1]."""
-    acquisition_time: Mapped[dt.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
-    """Time when metrics are acquired."""
-
-    def __repr__(self) -> str:
-        return f"Qubit(id={self.id}, qubit_id={self.qubit_id}, qpu_name={self.qpu_name}, time={self.acquisition_time})"
 
 
 def get_data(qibocal_output_folder: Path) -> list[dict[str, Any]]:
