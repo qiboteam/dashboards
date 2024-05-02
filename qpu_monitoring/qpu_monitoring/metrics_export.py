@@ -92,8 +92,3 @@ def export_metrics(
         push_data_postgres(platform, qpu_data, **kwargs)
     else:
         raise NotImplementedError
-
-
-if __name__ == "__main__":
-    qibocal_output_folder = Path(__file__).parent.parent / "report"
-    export_metrics(qibocal_output_folder)
