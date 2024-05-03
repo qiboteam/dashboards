@@ -31,5 +31,5 @@ class Qubit(Base):
     )
     """Time when metrics are acquired."""
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"Qubit(id={self.id}, qubit_id={self.qubit_id}, qpu_name={self.qpu_name}, time={self.acquisition_time})"
