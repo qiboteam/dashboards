@@ -56,12 +56,13 @@ def push_data_prometheus(platform: str, qpu_data: list[dict[str, Any]]):
     push_to_gateway("localhost:9091", job="pushgateway", registry=registry)
 
 
+def postgres_url(username, password, container, port, database):
+    return f"postgresql+psycopg2://{username}:{password}@{container}:{port}/{database}"
+
+
 def push_data_postgres(platform: str, qpu_data: list[dict[str, Any]], **kwargs):
-    credentials = f"{kwargs.pop('username')}:{kwargs.pop('password')}"
-    address = f"{kwargs.pop('container')}:{kwargs.pop('port')}"
-    database = kwargs.pop("database")
     engine = create_engine(
-        f"postgresql+psycopg2://{credentials}@{address}/{database}",
+        postgres_url(**kwargs),
         echo=True,
     )
     Base.metadata.create_all(engine)
