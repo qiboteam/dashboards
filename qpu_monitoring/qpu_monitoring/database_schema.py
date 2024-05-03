@@ -5,11 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-class Qubit(Base):
+class Qubit(DeclarativeBase):
     __tablename__ = "qubit"
 
     id: Mapped[int] = mapped_column(primary_key=True)
