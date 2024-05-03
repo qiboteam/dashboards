@@ -56,7 +56,10 @@ def push_data_prometheus(platform: str, qpu_data: list[dict[str, Any]]):
     push_to_gateway("localhost:9091", job="pushgateway", registry=registry)
 
 
-def postgres_url(username, password, container, port, database):
+def postgres_url(
+    username: str, password: str, container: str, port: int, database: str
+) -> str:
+    """Connection url to PostgreSQL database."""
     return f"postgresql+psycopg2://{username}:{password}@{container}:{port}/{database}"
 
 
