@@ -1,6 +1,8 @@
 """Collect data from qibocal reports and upload them to prometheus."""
 
+import datetime as dt
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -17,7 +19,13 @@ def from_path(json_path: Path):
     return json.loads(json_path.read_text())
 
 
-def get_data(qibocal_output_folder: Path) -> list[dict[str, Any]]:
+@dataclass
+class QpuData:
+    qubit_metrics: list[dict[str, Any]]
+    acquisition_time: dt.datetime = field(default_factory=dt.datetime.now)
+
+
+def get_data(qibocal_output_folder: Path) -> QpuData:
     qpu_data = []
     for n in range(1):
         path_t1 = deserialize(
@@ -40,17 +48,21 @@ def get_data(qibocal_output_folder: Path) -> list[dict[str, Any]]:
             "assignment_fidelity": path_fidelity["assignment_fidelity"][n],
         }
         qpu_data.append(qubit_data)
-    return qpu_data
+    report_meta = json.loads((qibocal_output_folder / "meta.json").read_text())
+    date = report_meta["date"]
+    time = report_meta["start-time"]
+    acquisition_time = dt.datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+    return QpuData(qpu_data, acquisition_time)
 
 
-def push_data_prometheus(platform: str, qpu_data: list[dict[str, Any]]):
+def push_data_prometheus(platform: str, qpu_data: QpuData):
     registry = CollectorRegistry()
     registry_gauges = {}
-    for key in qpu_data[0].keys():
+    for key in qpu_data.qubit_metrics[0].keys():
         gauge = Gauge(f"{platform}_{key}", f"{platform}_{key}", registry=registry)
         registry_gauges[key] = gauge
 
-    for qubit_data in qpu_data:
+    for qubit_data in qpu_data.qubit_metrics:
         for key, value in qubit_data.items():
             registry_gauges[key].set(value)
     push_to_gateway("localhost:9091", job="pushgateway", registry=registry)
@@ -63,18 +75,19 @@ def postgres_url(
     return f"postgresql+psycopg2://{username}:{password}@{container}:{port}/{database}"
 
 
-def push_data_postgres(platform: str, qpu_data: list[dict[str, Any]], **kwargs):
+def push_data_postgres(platform: str, qpu_data: QpuData, **kwargs):
     engine = create_engine(
         postgres_url(**kwargs),
         echo=True,
     )
     Base.metadata.create_all(engine)
 
-    for i, qubit_data in enumerate(qpu_data):
+    for i, qubit_data in enumerate(qpu_data.qubit_metrics):
         with Session(engine) as session:
             qubit = Qubit(
                 qubit_id=i,
                 qpu_name=platform,
+                acquisition_time=qpu_data.acquisition_time,
                 **qubit_data,
             )
 
