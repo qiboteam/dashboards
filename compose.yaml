@@ -12,6 +12,8 @@ services:
       timeout: 5s
       retries: 5
     extra_hosts: ["host.docker.internal:host-gateway"]
+    volumes:
+      - grafana-storage:/var/lib/grafana
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -57,4 +59,5 @@ networks:
   my_network:
     driver: bridge
 volumes:
+  grafana-storage:
   prometheus_data: {}
