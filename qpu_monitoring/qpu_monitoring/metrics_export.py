@@ -2,24 +2,23 @@
 
 import json
 from pathlib import Path
+from typing import Any
 
 import yaml
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from qibocal.auto.serialize import deserialize
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+from .database_schema import Base, Qubit
 
 
 def from_path(json_path: Path):
     return json.loads(json_path.read_text())
 
 
-def get_data(qibocal_output_folder: Path):
-    platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
-        "platform"
-    ]
-    registry = CollectorRegistry()
-    t1 = Gauge(f"{platform}_t1", f"T1 in us", registry=registry)
-    t2 = Gauge(f"{platform}_t2", f"T2 in us", registry=registry)
-    fidelity = Gauge(f"{platform}_assignment_fidelity", f"T2 in us", registry=registry)
+def get_data(qibocal_output_folder: Path) -> list[dict[str, Any]]:
+    qpu_data = []
     for n in range(1):
         path_t1 = deserialize(
             from_path(qibocal_output_folder / "data" / f"t1_{n}" / "results.json")
@@ -35,16 +34,65 @@ def get_data(qibocal_output_folder: Path):
                 / "results.json"
             )
         )
-        t1.set(path_t1["t1"][n][0])
-        t2.set(path_t2["t2"][n][0])
-        fidelity.set(path_fidelity["assignment_fidelity"][n])
+        qubit_data = {
+            "t1": path_t1["t1"][n][0],
+            "t2": path_t2["t2"][n][0],
+            "assignment_fidelity": path_fidelity["assignment_fidelity"][n],
+        }
+        qpu_data.append(qubit_data)
+    return qpu_data
+
+
+def push_data_prometheus(platform: str, qpu_data: list[dict[str, Any]]):
+    registry = CollectorRegistry()
+    registry_gauges = {}
+    for key in qpu_data[0].keys():
+        gauge = Gauge(f"{platform}_{key}", f"{platform}_{key}", registry=registry)
+        registry_gauges[key] = gauge
+
+    for qubit_data in qpu_data:
+        for key, value in qubit_data.items():
+            registry_gauges[key].set(value)
     push_to_gateway("localhost:9091", job="pushgateway", registry=registry)
 
 
-def export_metrics(qibocal_output_folder: Path):
-    get_data(qibocal_output_folder)
+def postgres_url(
+    username: str, password: str, container: str, port: int, database: str
+) -> str:
+    """Connection url to PostgreSQL database."""
+    return f"postgresql+psycopg2://{username}:{password}@{container}:{port}/{database}"
 
 
-if __name__ == "__main__":
-    qibocal_output_folder = Path(__file__).parent.parent / "report"
-    export_metrics(qibocal_output_folder)
+def push_data_postgres(platform: str, qpu_data: list[dict[str, Any]], **kwargs):
+    engine = create_engine(
+        postgres_url(**kwargs),
+        echo=True,
+    )
+    Base.metadata.create_all(engine)
+
+    for i, qubit_data in enumerate(qpu_data):
+        with Session(engine) as session:
+            qubit = Qubit(
+                qubit_id=i,
+                qpu_name=platform,
+                **qubit_data,
+            )
+
+            session.add_all([qubit])
+
+            session.commit()
+
+
+def export_metrics(
+    qibocal_output_folder: Path, export_database: str = "pushgateway", **kwargs
+):
+    platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
+        "platform"
+    ]
+    qpu_data = get_data(qibocal_output_folder)
+    if export_database == "pushgateway":
+        push_data_prometheus(platform, qpu_data)
+    elif export_database == "postgres":
+        push_data_postgres(platform, qpu_data, **kwargs)
+    else:
+        raise NotImplementedError

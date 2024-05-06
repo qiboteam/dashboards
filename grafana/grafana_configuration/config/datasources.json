@@ -3,5 +3,18 @@
         "name": "prometheus",
         "type": "prometheus",
         "url": "http://prometheus:9090"
+    },
+    {
+        "name": "postgres",
+        "type": "postgres",
+        "url": "postgres:5432",
+        "database": "qpu_metrics",
+        "user": "dash_admin",
+        "jsonData": {
+            "sslmode": "disable"
+        },
+        "secureJsonData": {
+            "password": "dash_admin"
+        }
     }
 ]

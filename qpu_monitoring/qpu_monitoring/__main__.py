@@ -59,6 +59,13 @@ def monitor_qpu(job_info: SlurmJobInfo):
     If platform is set to dummy, do not use slurm and run
     qq locally instead.
     """
+    postgres_info = {
+        "username": "dash_admin",
+        "password": "dash_admin",
+        "container": "postgres",
+        "port": 5432,
+        "database": "qpu_metrics",
+    }
     try:
         script_path = SLURM_JOBS / job_info.platform
         report_save_path = REPORTS / job_info.platform
@@ -78,8 +85,9 @@ def monitor_qpu(job_info: SlurmJobInfo):
             # use sbatch
             subprocess.run([script_path / "slurm_monitor_submit.sh"], cwd=script_path)
         # process acquired data
-        export_metrics(report_save_path)
-    except Exception:
+        export_metrics(report_save_path, export_database="postgres", **postgres_info)
+    except Exception as e:
+        print(e)
         pass
 
 
