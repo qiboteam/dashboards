@@ -7,6 +7,18 @@ Docker containers can be set up with
 docker compose up
 ```
 
+Containers can be shut down with
+``` bash
+docker compose down
+```
+
+### Development
+
+When working on containers, make sure to re-build them before setting them up:
+``` bash
+docker compose build
+```
+
 ## Containers
 
 Currently the following containers are created:
