@@ -41,3 +41,30 @@ A `.env` file will look like this:
 ADMIN_PASSWORD=new_admin_password
 GRAFANA_USERS='[{"login":"first_user","password":"first_password"}, {"login":"second_user","password":"second_password","role":"Editor"}]'
 ```
+
+## Monitoring QPUs
+
+QPUs are monitored with the `qpu_monitoring` Python package.
+
+``` bash
+python -m qpu_monitoring
+```
+
+### Set up monitoring
+
+The package can be installed using `poetry`:
+
+``` bash
+cd qpu_monitoring
+poetry install
+```
+
+### Monitor QPUs on a slurm cluster
+
+`qpu_monitoring` can also run on slurm clusters passing a json dictionary of the QPUs to be monitored:
+
+``` bash
+python -m qpu_monitoring --slurm_configuration '[{"partition":"slurm_partition_name","platform":"qibolab_platform_name"}]' --qibolab_platforms_path /path/to/qibolab/plaftorms
+```
+
+Note: the directory containing qibolab runcards needs to be specified using the `--qibolab_platforms_path` flag.
