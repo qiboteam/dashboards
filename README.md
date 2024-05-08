@@ -18,6 +18,8 @@ Currently the following containers are created:
  It can be used for sending metrics, which will then be scraped by Prometheus.
  - `monitoring` containing a Ubuntu image with `qibocal` to be restarted at regular intervals for acquiring QPU metrics.
 
+![docker configuration](containers_diagram.png)
+
 ## Grafana users
 
 By default grafana only creates an account with admin privileges with username `admin` and password `admin`.
