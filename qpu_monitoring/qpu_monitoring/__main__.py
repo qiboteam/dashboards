@@ -62,7 +62,7 @@ def monitor_qpu(job_info: SlurmJobInfo):
     postgres_info = {
         "username": "dash_admin",
         "password": "dash_admin",
-        "container": "postgres",
+        "container": "localhost",
         "port": 5432,
         "database": "qpu_metrics",
     }
