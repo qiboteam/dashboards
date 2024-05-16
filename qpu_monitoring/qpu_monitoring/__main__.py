@@ -4,6 +4,7 @@ import subprocess
 from dataclasses import dataclass
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
+from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -24,9 +25,14 @@ TEMPLATE_SCRIPT_NAMES = {
 
 @dataclass
 class SlurmJobInfo:
-    partition: str
+    partition: Optional[str]
+    """Slurm partition on which to run monitoring.
+    If set to None, run the script locally."""
     platform: str
+    """Qibolab platform on which to run the monitoring script.
+    If set to None, default to dummy."""
     qibolab_platforms_path: Path
+    """Path of the platforms for qibolab."""
 
     def __post_init__(self):
         """If platform is set to None, default to "dummy"."""
@@ -39,6 +45,17 @@ def generate_monitoring_script(
     monitoring_script_path: Path,
     report_save_path: Path = None,
 ):
+    """Create bash scripts for slurm and qibocal auto with jinja.
+
+    Args:
+        job_info: object containing information on where to run the specific monitoring job.
+        monitoring_script_path: the path where to save the generated bash script.
+            Currently scripts are saved to
+            <user_home>/monitoring_jobs/<platform_name>
+        report_save_path: where to save the qibocal report.
+            Currently reports are saved to
+            <user_home>/monitoring_reports/<platform_name>
+    """
     env = Environment(loader=FileSystemLoader(TEMPLATES))
     template = env.get_template(TEMPLATE_SCRIPT_NAMES[monitoring_script_path.name])
     monitoring_script = template.render(
