@@ -1,4 +1,5 @@
 import argparse
+import datetime as dt
 import json
 import subprocess
 from dataclasses import dataclass
@@ -54,7 +55,9 @@ def generate_monitoring_script(
             <user_home>/monitoring_jobs/<platform_name>
         report_save_path: where to save the qibocal report.
             Currently reports are saved to
-            <user_home>/monitoring_reports/<platform_name>
+            <user_home>/monitoring_reports/<platform_name>/timestamp
+            where timestamp is in the format "%Year%Month%Day_%Hours%Minutes%Seconds"
+            (YYYYmmdd_HHMMSS).
     """
     env = Environment(loader=FileSystemLoader(TEMPLATES))
     template = env.get_template(TEMPLATE_SCRIPT_NAMES[monitoring_script_path.name])
@@ -83,9 +86,10 @@ def monitor_qpu(job_info: SlurmJobInfo):
         "port": 5432,
         "database": "qpu_metrics",
     }
+    current_timestamp = dt.datetime.now().strftime(r"%Y%m%d_%H%M%S")
     try:
         script_path = SLURM_JOBS / job_info.platform
-        report_save_path = REPORTS / job_info.platform
+        report_save_path = REPORTS / job_info.platform / current_timestamp
         generate_monitoring_script(
             job_info,
             script_path / "slurm_monitor_submit.sh",
