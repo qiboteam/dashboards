@@ -58,7 +58,7 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
 def push_data_prometheus(platform: str, qpu_data: QpuData):
     registry = CollectorRegistry()
     registry_gauges = {}
-    for key in qpu_data.qubit_metrics[0].keys():
+    for key in qpu_data.qubit_metrics[0]:
         gauge = Gauge(f"{platform}_{key}", f"{platform}_{key}", registry=registry)
         registry_gauges[key] = gauge
 
