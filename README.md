@@ -32,7 +32,7 @@ Its password can be changed and other users may be created by setting environmen
 A `.env` file will look like this:
 ``` bash
 ADMIN_PASSWORD=new_admin_password
-GRAFANA_USERS='[{"login":"first_user","password":"first_password"}, {"login":"second_user","password":"second_password","role":"Editor"}]'
+GRAFANA_USERS='[{"login":"first_user","password":"first_password"},{"login":"second_user","password":"second_password","role":"Editor"}]'
 ```
 
 ## Monitoring QPUs
