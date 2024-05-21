@@ -31,25 +31,26 @@ class QpuData:
 
 def get_data(qibocal_output_folder: Path) -> QpuData:
     qpu_data = []
-    for n in range(1):
-        path_t1 = deserialize(
-            from_path(qibocal_output_folder / "data" / f"t1_{n}" / "results.json")
+    path_t1 = deserialize(
+        from_path(qibocal_output_folder / "data" / "t1_0" / "results.json")
+    )
+    path_t2 = deserialize(
+        from_path(qibocal_output_folder / "data" / "t2_0" / "results.json")
+    )
+    path_fidelity = deserialize(
+        from_path(
+            qibocal_output_folder
+            / "data"
+            / "readout characterization_0"
+            / "results.json"
         )
-        path_t2 = deserialize(
-            from_path(qibocal_output_folder / "data" / f"t2_{n}" / "results.json")
-        )
-        path_fidelity = deserialize(
-            from_path(
-                qibocal_output_folder
-                / "data"
-                / f"readout characterization_{n}"
-                / "results.json"
-            )
-        )
+    )
+    # assuming all single qubit routines run on the same qubits
+    for qubit_id in path_t1["t1"]:
         qubit_data = {
-            "t1": path_t1["t1"][n][0],
-            "t2": path_t2["t2"][n][0],
-            "assignment_fidelity": path_fidelity["assignment_fidelity"][n],
+            "t1": path_t1["t1"][qubit_id][0],
+            "t2": path_t2["t2"][qubit_id][0],
+            "assignment_fidelity": path_fidelity["assignment_fidelity"][qubit_id],
         }
         qpu_data.append(qubit_data)
     report_meta = json.loads((qibocal_output_folder / "meta.json").read_text())
