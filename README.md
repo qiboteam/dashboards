@@ -4,19 +4,12 @@
 
 Docker containers can be set up with
 ``` bash
-docker compose up
+docker compose up --build
 ```
 
 Containers can be shut down with
 ``` bash
 docker compose down
-```
-
-### Development
-
-When working on containers, make sure to re-build them before setting them up:
-``` bash
-docker compose build
 ```
 
 ## Containers
