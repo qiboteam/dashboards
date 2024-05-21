@@ -2,7 +2,7 @@
 
 ## Installation instruction
 
-Docker containers can be set up with
+Docker containers can be set up (the optional flag `-d` can be added to run containers in the background) with
 ``` bash
 docker compose up --build
 ```
