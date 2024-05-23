@@ -11,6 +11,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - grafana_data:/var/lib/grafana
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -42,6 +44,8 @@ services:
       - POSTGRES_PASSWORD=dash_admin
       - POSTGRES_USER=dash_admin
       - POSTGRES_DB=qpu_metrics
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   temperature:
     build: temperature/.
     container_name: temperature
@@ -62,8 +66,12 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     networks:
       - my_network
+    volumes:
+      - grafana_data:/var/lib/grafana
 networks:
   my_network:
     driver: bridge
 volumes:
+  grafana_data:
   prometheus_data: {}
+  postgres_data:
