@@ -29,3 +29,16 @@ A `.env` file will look like this:
 ADMIN_PASSWORD=new_admin_password
 GRAFANA_USERS='[{"login":"first_user","password":"first_password"}, {"login":"second_user","password":"second_password","role":"Editor"}]'
 ```
+
+
+## Template
+
+After initial setup, a template is provided which can be set up with
+``` bash
+docker run --rm -it -v dashboards_grafana_data:/grafana/grafana -v ${PWD}:/dmc alpine tar -xvf /dmc/grafana-config.tar.gz -C /grafana
+```
+
+If you wish to backup and preserve your grafana setup, you can create a tar file using the following command:
+``` bash
+docker run --rm -it -v dashboards_grafana_data:/grafana -v ${PWD}:/dmc alpine tar cvfj /dmc/grafana-config.tar.gz /grafana
+```
