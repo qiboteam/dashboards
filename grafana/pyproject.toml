@@ -6,6 +6,7 @@ name = "grafana_configuration"
 version = "0.0.1"
 dependencies = [
     "grafanalib",
+    "jinja2",
     "pyyaml",
     "requests"
 ]

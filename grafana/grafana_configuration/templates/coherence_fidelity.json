@@ -1,0 +1,124 @@
+[
+    {
+        "title": "{{ qpu_name }}",
+        "rows": [
+            {% for panel in metric_panels %}
+            {% set panelloop = loop %}
+            {
+                "title": "{{ panel.title }}",
+                "grid_pos": {"x":0, "y": {{ panelloop.index * (panel.height + 1) }}},
+                "panels": [
+                    {% for qubit_id in range(qubits) %}
+                    {
+                        "type": "TimeSeries",
+                        "value": {
+                            "title": "",
+                            "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 2 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": {{ panel.height }}},
+                            "unit": "ns",
+                            "targets": [
+                                {% for metric in panel.metrics %}
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "postgres",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='dummy' AND qubit_id={{ qubit_id }}",
+                                        "legendFormat": "{{ metric.name }}",
+                                        "color": "{{ metric.color }}",
+                                        "sql": {
+                                            "columns": [
+                                                {
+                                                    "type": "function",
+                                                    "parameters": [
+                                                        {
+                                                            "type": "functionParameter",
+                                                            "name": "{{ metric.name }}"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "function",
+                                                    "parameters": [
+                                                        {
+                                                            "type": "functionParameter",
+                                                            "name": "acquisition_time"
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "groupBy": [
+                                                {
+                                                    "type": "groupBy",
+                                                    "property": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            ],
+                                            "limit": 50
+                                        },
+                                        "table": "qubit"
+                                    }
+                                }{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Stat",
+                        "value": {
+                            "title": "Qubit {{ qubit_id }}",
+                            "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 1 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": 2},
+                            "unit": "ns",
+                            "targets": [
+                                {% for metric in panel.metrics %}
+                                {
+                                    "type": "Target",
+                                    "value": {
+                                        "datasource": "postgres",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='dummy' AND qubit_id={{ qubit_id }}",
+                                        "legendFormat": "{{ metric.name }}",
+                                        "color": "{{ metric.color }}",
+                                        "sql": {
+                                            "columns": [
+                                                {
+                                                    "type": "function",
+                                                    "parameters": [
+                                                        {
+                                                            "type": "functionParameter",
+                                                            "name": "{{ metric.name }}"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "function",
+                                                    "parameters": [
+                                                        {
+                                                            "type": "functionParameter",
+                                                            "name": "acquisition_time"
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "groupBy": [
+                                                {
+                                                    "type": "groupBy",
+                                                    "property": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            ],
+                                            "limit": 50
+                                        },
+                                        "table": "qubit"
+                                    }
+                                }{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        }
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }
+]
