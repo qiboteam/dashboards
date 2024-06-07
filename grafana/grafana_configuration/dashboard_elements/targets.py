@@ -3,7 +3,10 @@ import grafanalib.core as glc
 
 class Override:
     def __init__(
-        self, name: str = "", color: str = None, thresholds: list[list] = None
+        self,
+        name: str = "",
+        color: str = None,
+        thresholds: list[list] = None,
     ):
         """Initialize object.
 
@@ -53,11 +56,32 @@ class Override:
 
 class Target(glc.Target):
     def __init__(
-        self, *args, color: str = None, thresholds: list[list] = None, **kwargs
+        self,
+        *args,
+        color: str = None,
+        thresholds: list[list] = None,
+        rawSql: str = None,
+        sql: dict = None,
+        table: str = None,
+        **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.color = color
         self.thresholds = thresholds
+        self.rawSql = rawSql
+        self.sql = sql
+        self.table = table
+
+    def to_json_data(self):
+        target_dict = super().to_json_data()
+        if self.rawSql is not None:
+            target_dict["rawSql"] = self.rawSql
+            target_dict["format"] = "table"
+        if self.sql is not None:
+            target_dict["sql"] = self.sql
+        if self.table is not None:
+            target_dict["table"] = self.table
+        return target_dict
 
     def override(self):
         return Override(self.legendFormat, color=self.color, thresholds=self.thresholds)
