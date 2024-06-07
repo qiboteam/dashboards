@@ -32,17 +32,14 @@ class QpuData:
 def get_data(qibocal_output_folder: Path) -> QpuData:
     qpu_data = []
     path_t1 = deserialize(
-        from_path(qibocal_output_folder / "data" / "t1_0" / "results.json")
+        from_path(qibocal_output_folder / "data" / "t1" / "results.json")
     )
     path_t2 = deserialize(
-        from_path(qibocal_output_folder / "data" / "t2_0" / "results.json")
+        from_path(qibocal_output_folder / "data" / "t2" / "results.json")
     )
     path_fidelity = deserialize(
         from_path(
-            qibocal_output_folder
-            / "data"
-            / "readout characterization_0"
-            / "results.json"
+            qibocal_output_folder / "data" / "readout characterization" / "results.json"
         )
     )
     # assuming all single qubit routines run on the same qubits
