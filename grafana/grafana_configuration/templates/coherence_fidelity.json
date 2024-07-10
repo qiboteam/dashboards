@@ -21,7 +21,7 @@
                                     "type": "Target",
                                     "value": {
                                         "datasource": "postgres",
-                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='dummy' AND qubit_id={{ qubit_id }}",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='{{ qpu_name }}' AND qubit_id={{ qubit_id }}",
                                         "legendFormat": "{{ metric.name }}",
                                         "color": "{{ metric.color }}",
                                         "sql": {
@@ -74,7 +74,7 @@
                                     "type": "Target",
                                     "value": {
                                         "datasource": "postgres",
-                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='dummy' AND qubit_id={{ qubit_id }}",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='{{ qpu_name }}' AND qubit_id={{ qubit_id }}",
                                         "legendFormat": "{{ metric.name }}",
                                         "color": "{{ metric.color }}",
                                         "sql": {
