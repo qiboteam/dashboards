@@ -14,7 +14,7 @@
                         "value": {
                             "title": "",
                             "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 2 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": {{ panel.height }}},
-                            "unit": "ns",
+                            "unit": "{{ panel.unit }}",
                             "targets": [
                                 {% for metric in panel.metrics %}
                                 {
@@ -67,7 +67,7 @@
                         "value": {
                             "title": "Qubit {{ qubit_id }}",
                             "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 1 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": 2},
-                            "unit": "ns",
+                            "unit": "{{ panel.unit }}",
                             "targets": [
                                 {% for metric in panel.metrics %}
                                 {

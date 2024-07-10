@@ -29,6 +29,7 @@ class MetricPanel:
     metrics: list[Metric]
     width: int
     height: int
+    unit: str
 
 
 def main():
@@ -52,9 +53,19 @@ def main():
     ]
     metric_panels = [
         MetricPanel(
-            title="Coherence_times", metrics=coherence_metrics, width=5, height=6
+            title="Coherence_times",
+            metrics=coherence_metrics,
+            width=5,
+            height=6,
+            unit="ns",
         ),
-        MetricPanel(title="Fidelities", metrics=fidelity_metrics, width=5, height=6),
+        MetricPanel(
+            title="Fidelities",
+            metrics=fidelity_metrics,
+            width=5,
+            height=6,
+            unit="percentunit",
+        ),
     ]
     qpu_configuration = json.loads(
         (Path(__file__).parent / "config" / "qpu_config.json").read_text()
