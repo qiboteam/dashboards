@@ -1,6 +1,9 @@
 import argparse
+import dataclasses
 import json
+from pathlib import Path
 
+import jinja2
 from grafana_configuration import dashboards, datasources
 
 from .api_key import grafana_key
@@ -14,6 +17,21 @@ HTTP_HEADERS = {
 }
 
 
+@dataclasses.dataclass
+class Metric:
+    name: str
+    color: str
+
+
+@dataclasses.dataclass
+class MetricPanel:
+    title: str
+    metrics: list[Metric]
+    width: int
+    height: int
+    unit: str
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--admin", type=str, nargs="?", default=None)
@@ -25,7 +43,42 @@ def main():
     for data_source in data_sources:
         datasources.create(data_source, http_headers=HTTP_HEADERS)
 
-    dashboards_configurations = json.loads(DASHBOARD_CONFIGURATION_PATH.read_text())
+    # dashboards_configurations = json.loads(DASHBOARD_CONFIGURATION_PATH.read_text())
+    coherence_metrics = [
+        Metric(name="t1", color="red"),
+        Metric(name="t2", color="blue"),
+    ]
+    fidelity_metrics = [
+        Metric(name="assignment_fidelity", color="green"),
+    ]
+    metric_panels = [
+        MetricPanel(
+            title="Coherence_times",
+            metrics=coherence_metrics,
+            width=5,
+            height=6,
+            unit="ns",
+        ),
+        MetricPanel(
+            title="Fidelities",
+            metrics=fidelity_metrics,
+            width=5,
+            height=6,
+            unit="percentunit",
+        ),
+    ]
+    qpu_configuration = json.loads(
+        (Path(__file__).parent / "config" / "qpu_config.json").read_text()
+    )
+    TEMPLATES = Path(__file__).parent / "templates"
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATES))
+    template = env.get_template("coherence_fidelity.json")
+    json_string = template.render(
+        qpu_name=qpu_configuration["name"],
+        qubits=qpu_configuration["qubits"],
+        metric_panels=metric_panels,
+    )
+    dashboards_configurations = json.loads(json_string)
     for dash in dashboards_configurations:
         dashboards.create(dash, http_headers=HTTP_HEADERS)
 
