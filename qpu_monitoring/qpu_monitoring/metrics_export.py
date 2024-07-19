@@ -8,6 +8,7 @@ from typing import Any
 
 import yaml
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
+from qibocal.auto.output import Output
 from qibocal.auto.serialize import deserialize
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -50,10 +51,8 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
             "assignment_fidelity": path_fidelity["assignment_fidelity"][qubit_id],
         }
         qpu_data.append(qubit_data)
-    report_meta = json.loads((qibocal_output_folder / "meta.json").read_text())
-    date = report_meta["date"]
-    time = report_meta["start-time"]
-    acquisition_time = dt.datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+    report_meta = Output.load(qibocal_output_folder).meta
+    acquisition_time = report_meta.start_time
     return QpuData(qpu_data, acquisition_time)
 
 
