@@ -1,6 +1,6 @@
 # Templates
 
-Some example templates to start off with
+Some example templates to start off with, remember to configure datasources after overriding the templates.
 
 ## NQCH template
 
