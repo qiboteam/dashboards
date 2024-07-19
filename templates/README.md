@@ -6,4 +6,4 @@ Some example templates to start off with
 
 Template as used in https://www.nqch.sg/
 
-![NQCH template](templates/nqch_template.png?raw=true "NQCH template")
+![NQCH template](nqch_template.png?raw=true "NQCH template")
