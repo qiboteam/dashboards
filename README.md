@@ -35,6 +35,8 @@ After initial setup, a template is provided which can be set up with
 ``` bash
 docker run --rm -it -v dashboards_grafana_data:/grafana/grafana -v ${PWD}:/dmc alpine tar -xvf /dmc/templates/{file name}.tar.gz -C /grafana
 ```
+WARNING: This will delete the previous grafana setup, it is recommended to backup your current template with the following command if you are not starting fresh.
+
 
 If you wish to backup and preserve your grafana setup, you can create a tar file using the following command:
 ``` bash
