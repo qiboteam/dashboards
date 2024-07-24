@@ -31,28 +31,28 @@ class QpuData:
 
 
 def get_data(qibocal_output_folder: Path) -> QpuData:
-    qpu_data = []
+    from qibocal.auto.output import Output
+
     path_t1 = deserialize(
         from_path(qibocal_output_folder / "data" / "t1" / "results.json")
     )
-    path_t2 = deserialize(
-        from_path(qibocal_output_folder / "data" / "t2" / "results.json")
-    )
-    path_fidelity = deserialize(
-        from_path(
-            qibocal_output_folder / "data" / "readout characterization" / "results.json"
-        )
-    )
-    # assuming all single qubit routines run on the same qubits
-    for qubit_id in path_t1["t1"]:
-        qubit_data = {
-            "t1": path_t1["t1"][qubit_id][0],
-            "t2": path_t2["t2"][qubit_id][0],
-            "assignment_fidelity": path_fidelity["assignment_fidelity"][qubit_id],
-        }
-        qpu_data.append(qubit_data)
     report_meta = Output.load(qibocal_output_folder).meta
     acquisition_time = report_meta.start_time
+    out = Output.load(qibocal_output_folder)
+    qpu_data = []
+    for qubit_id in path_t1["t1"]:  # TODO: Remove this loop here
+        qubit_data = {}
+        for task_id, result in out.history.items():
+            task_id = task_id.id
+            metric = task_id
+            if task_id == "readout characterization":
+                metric = "assignment_fidelity"
+            metric_value = getattr(result.results, metric)[qubit_id]
+            # TODO: Remove this hardcoded part
+            if metric != "assignment_fidelity":
+                metric_value = metric_value[0]
+            qubit_data[metric] = metric_value
+        qpu_data.append(qubit_data)
     return QpuData(qpu_data, acquisition_time)
 
 
