@@ -23,9 +23,9 @@ def from_path(json_path: Path):
 @dataclass
 class QpuData:
     qubit_metrics: dict[str, dict[str, Any]]
-    """List of metrics acquired using qibocal.
-    Its shape is equal to the number of quit of the platform.
-    Each element of the list contains a dictionary with acquired data."""
+    """Dictionary of metrics acquired using qibocal.
+    Its outermost key is the qubit id. For each qubit it, it stores
+    a dictionary with acquired data."""
     acquisition_time: dt.datetime = field(default_factory=dt.datetime.now)
     """Date and time of the qibocal acquisition."""
 
