@@ -1,7 +1,7 @@
 """Collect data from qibocal reports and upload them to prometheus."""
 
+import collections
 import datetime as dt
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -9,15 +9,10 @@ from typing import Any
 import yaml
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from qibocal.auto.output import Output
-from qibocal.auto.serialize import deserialize
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from .database_schema import Base, Qubit
-
-
-def from_path(json_path: Path):
-    return json.loads(json_path.read_text())
 
 
 @dataclass
@@ -32,26 +27,22 @@ class QpuData:
 
 def get_data(qibocal_output_folder: Path) -> QpuData:
     """Read metrics acquired by qibocal from the report."""
-    path_t1 = deserialize(
-        from_path(qibocal_output_folder / "data" / "t1" / "results.json")
-    )
     out = Output.load(qibocal_output_folder)
     report_meta = out.meta
     acquisition_time = report_meta.start_time
-    qpu_data = {}
-    for qubit_id in path_t1["t1"]:  # TODO: Remove this loop here
-        qubit_data = {}
-        for task_id, result in out.history.items():
-            task_id = task_id.id
-            metric = task_id
-            if task_id == "readout characterization":
-                metric = "assignment_fidelity"
-            metric_value = getattr(result.results, metric)[qubit_id]
-            # TODO: Remove this hardcoded part
+    qpu_data = collections.defaultdict(dict)
+
+    for task_id, result in out.history.items():
+        task_id = task_id.id
+        metric = task_id
+        if task_id == "readout characterization":
+            metric = "assignment_fidelity"
+
+        metric_values = getattr(result.results, metric)
+        for qubit_id, qubit_metric in metric_values.items():
             if metric != "assignment_fidelity":
-                metric_value = metric_value[0]
-            qubit_data[metric] = metric_value
-        qpu_data[qubit_id] = qubit_data
+                qubit_metric = qubit_metric[0]
+            qpu_data[qubit_id][metric] = qubit_metric
     return QpuData(qpu_data, acquisition_time)
 
 
