@@ -31,14 +31,12 @@ class QpuData:
 
 
 def get_data(qibocal_output_folder: Path) -> QpuData:
-    from qibocal.auto.output import Output
-
     path_t1 = deserialize(
         from_path(qibocal_output_folder / "data" / "t1" / "results.json")
     )
-    report_meta = Output.load(qibocal_output_folder).meta
-    acquisition_time = report_meta.start_time
     out = Output.load(qibocal_output_folder)
+    report_meta = out.meta
+    acquisition_time = report_meta.start_time
     qpu_data = []
     for qubit_id in path_t1["t1"]:  # TODO: Remove this loop here
         qubit_data = {}
