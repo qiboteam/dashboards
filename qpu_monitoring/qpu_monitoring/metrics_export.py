@@ -22,7 +22,7 @@ def from_path(json_path: Path):
 
 @dataclass
 class QpuData:
-    qubit_metrics: list[dict[str, Any]]
+    qubit_metrics: dict[str, dict[str, Any]]
     """List of metrics acquired using qibocal.
     Its shape is equal to the number of quit of the platform.
     Each element of the list contains a dictionary with acquired data."""
@@ -38,7 +38,7 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     out = Output.load(qibocal_output_folder)
     report_meta = out.meta
     acquisition_time = report_meta.start_time
-    qpu_data = []
+    qpu_data = {}
     for qubit_id in path_t1["t1"]:  # TODO: Remove this loop here
         qubit_data = {}
         for task_id, result in out.history.items():
@@ -51,20 +51,25 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
             if metric != "assignment_fidelity":
                 metric_value = metric_value[0]
             qubit_data[metric] = metric_value
-        qpu_data.append(qubit_data)
+        qpu_data[qubit_id] = qubit_data
     return QpuData(qpu_data, acquisition_time)
 
 
 def push_data_prometheus(platform: str, qpu_data: QpuData):
     registry = CollectorRegistry()
     registry_gauges = {}
-    for key in qpu_data.qubit_metrics[0]:
-        gauge = Gauge(f"{platform}_{key}", f"{platform}_{key}", registry=registry)
-        registry_gauges[key] = gauge
+    for qubit_id, qubit_data in qpu_data.qubit_metrics.items():
+        for metric in qubit_data:
+            gauge = Gauge(
+                f"{platform}_{metric}_{qubit_id}",
+                f"{platform}_{metric}_{qubit_id}",
+                registry=registry,
+            )
+            registry_gauges[(qubit_id, metric)] = gauge
 
-    for qubit_data in qpu_data.qubit_metrics:
-        for key, value in qubit_data.items():
-            registry_gauges[key].set(value)
+    for qubit_id, qubit_data in qpu_data.qubit_metrics.items():
+        for metric_name, metric_value in qubit_data.items():
+            registry_gauges[(qubit_id, metric_name)].set(metric_value)
     push_to_gateway("localhost:9091", job="pushgateway", registry=registry)
 
 
@@ -82,17 +87,15 @@ def push_data_postgres(platform: str, qpu_data: QpuData, **kwargs):
     )
     Base.metadata.create_all(engine)
 
-    for i, qubit_data in enumerate(qpu_data.qubit_metrics):
+    for qubit_id, qubit_data in qpu_data.qubit_metrics.items():
         with Session(engine) as session:
             qubit = Qubit(
-                qubit_id=i,
+                qubit_id=qubit_id,
                 qpu_name=platform,
                 acquisition_time=qpu_data.acquisition_time,
                 **qubit_data,
             )
-
             session.add_all([qubit])
-
             session.commit()
 
 
