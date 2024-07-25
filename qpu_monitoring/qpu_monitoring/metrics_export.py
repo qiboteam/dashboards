@@ -31,6 +31,7 @@ class QpuData:
 
 
 def get_data(qibocal_output_folder: Path) -> QpuData:
+    """Read metrics acquired by qibocal from the report."""
     path_t1 = deserialize(
         from_path(qibocal_output_folder / "data" / "t1" / "results.json")
     )
