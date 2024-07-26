@@ -19,7 +19,7 @@ from .database_schema import Base, Qubit
 class QpuData:
     qubit_metrics: dict[str, dict[str, Any]]
     """Dictionary of metrics acquired using qibocal.
-    Its outermost key is the qubit id. For each qubit it, it stores
+    Its outermost key is the qubit id. For each qubit, it stores
     a dictionary with acquired data."""
     acquisition_time: dt.datetime = field(default_factory=dt.datetime.now)
     """Date and time of the qibocal acquisition."""
