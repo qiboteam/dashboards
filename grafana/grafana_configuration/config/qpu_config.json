@@ -1,4 +1,9 @@
 {
-    "name": "dummy",
-    "qubits": 4
+    "qpus":
+    [
+        {
+            "name": "dummy",
+            "qubits": 4
+        }
+    ]
 }

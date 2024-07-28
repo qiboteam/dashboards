@@ -73,14 +73,15 @@ def main():
     TEMPLATES = Path(__file__).parent / "templates"
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATES))
     template = env.get_template("coherence_fidelity.json")
-    json_string = template.render(
-        qpu_name=qpu_configuration["name"],
-        qubits=qpu_configuration["qubits"],
-        metric_panels=metric_panels,
-    )
-    dashboards_configurations = json.loads(json_string)
-    for dash in dashboards_configurations:
-        dashboards.create(dash, http_headers=HTTP_HEADERS)
+    for qpu_config in qpu_configuration["qpus"]:
+        json_string = template.render(
+            qpu_name=qpu_config["name"],
+            qubits=qpu_config["qubits"],
+            metric_panels=metric_panels,
+        )
+        dashboards_configurations = json.loads(json_string)
+        for dash in dashboards_configurations:
+            dashboards.create(dash, http_headers=HTTP_HEADERS)
 
     if args.users is not None:
         user_configurations = json.loads(args.users)
