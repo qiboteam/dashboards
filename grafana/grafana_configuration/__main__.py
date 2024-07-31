@@ -37,6 +37,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--admin", type=str, nargs="?", default=None)
     parser.add_argument("--users", type=str, nargs="?", default=None)
+    parser.add_argument(
+        "--qpu-config",
+        type=Path,
+        nargs="?",
+        default=Path(__file__).parent / "config" / "qpu_config.json",
+    )
     args = parser.parse_args()
 
     # create defined datasources
@@ -68,11 +74,9 @@ def main():
             unit="percentunit",
         ),
     ]
-    qpu_configuration = json.loads(
-        (Path(__file__).parent / "config" / "qpu_config.json").read_text()
-    )
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(GRAFANA_TEMPLATES_PATH))
     template = env.get_template("coherence_fidelity.json")
+    qpu_configuration = json.loads(args.qpu_config.read_text())
     for qpu_config in qpu_configuration["qpus"]:
         json_string = template.render(
             qpu_name=qpu_config["name"],
