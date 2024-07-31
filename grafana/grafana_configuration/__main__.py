@@ -8,7 +8,7 @@ from grafana_configuration import dashboards, datasources
 
 from .api_key import grafana_key
 from .users import change_admin_password, create_users
-from .utils import DASHBOARD_CONFIGURATION_PATH, DATASOURCE_CONFIGURATION_PATH
+from .utils import DATASOURCE_CONFIGURATION_PATH
 
 HTTP_HEADERS = {
     "Authorization": f"Bearer {grafana_key()}",
@@ -50,7 +50,6 @@ def main():
     for data_source in data_sources:
         datasources.create(data_source, http_headers=HTTP_HEADERS)
 
-    # dashboards_configurations = json.loads(DASHBOARD_CONFIGURATION_PATH.read_text())
     coherence_metrics = [
         Metric(name="t1", color="red"),
         Metric(name="t2", color="blue"),
