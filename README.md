@@ -54,5 +54,9 @@ An optional list of QPUs can be provided to the initialization script in a json 
 }
 ```
 For each QPU listed, the script generates a dashboard showing coherence times and assignment fidelity.
+The path of the json file can be saved in the `.env` file as:
+``` bash
+QPU_CONFIG_JSON_PATH=/path/to/json/file.json
+```
 
 A reference file (used by default) can be found at `grafana_configuration/config/qpu_config.json`.
