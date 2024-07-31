@@ -15,6 +15,7 @@ HTTP_HEADERS = {
     "Accept": "application/json",
     "Content-Type": "application/json",
 }
+GRAFANA_TEMPLATES_PATH = Path(__file__).parent / "templates"
 
 
 @dataclasses.dataclass
@@ -70,8 +71,7 @@ def main():
     qpu_configuration = json.loads(
         (Path(__file__).parent / "config" / "qpu_config.json").read_text()
     )
-    TEMPLATES = Path(__file__).parent / "templates"
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATES))
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(GRAFANA_TEMPLATES_PATH))
     template = env.get_template("coherence_fidelity.json")
     for qpu_config in qpu_configuration["qpus"]:
         json_string = template.render(
