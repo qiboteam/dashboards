@@ -35,8 +35,12 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     for task_id, result in out.history.items():
         task_id = task_id.id
         metric = task_id
-        if task_id == "readout characterization":
+        # if task_id == "readout characterization":
+        #     metric = "assignment_fidelity"
+        if task_id == "readout_characterization":
             metric = "assignment_fidelity"
+        if task_id == "ramsey":
+            continue
 
         metric_values = getattr(result.results, metric)
         for qubit_id, qubit_metric in metric_values.items():
@@ -93,9 +97,12 @@ def push_data_postgres(platform: str, qpu_data: QpuData, **kwargs):
 def export_metrics(
     qibocal_output_folder: Path, export_database: str = "pushgateway", **kwargs
 ):
-    platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
-        "platform"
-    ]
+    # platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
+    #     "platform"
+    # ]
+    import json
+
+    platform = json.loads((qibocal_output_folder / "meta.json").read_text())["platform"]
     qpu_data = get_data(qibocal_output_folder)
     if export_database == "pushgateway":
         push_data_prometheus(platform, qpu_data)

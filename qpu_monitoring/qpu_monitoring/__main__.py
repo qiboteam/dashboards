@@ -64,9 +64,9 @@ def generate_monitoring_script(
     monitoring_script = template.render(
         slurm_partition=job_info.partition,
         platform=job_info.platform,
-        runcard_path=RUNCARD,
         report_path=report_save_path,
         qibolab_platforms_path=job_info.qibolab_platforms_path,
+        monitoring_script_path=Path(__file__).parents[1] / "scripts" / "monitoring.py",
     )
     monitoring_script_path.parent.mkdir(parents=True, exist_ok=True)
     monitoring_script_path.write_text(monitoring_script)
