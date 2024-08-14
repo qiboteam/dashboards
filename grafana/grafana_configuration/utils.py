@@ -19,5 +19,4 @@ TEMPLATES_PATH = Path(__file__).parent / "templates"
 """Path of the directory containing json templates used for grafana."""
 
 CONFIGS = Path(__file__).parent / "config"
-DATASOURCE_CONFIGURATION_PATH =  CONFIGS / "datasources.json"
-DASHBOARD_CONFIGURATION_PATH = CONFIGS / "dashboards.json"
+DATASOURCE_CONFIGURATION_PATH = CONFIGS / "datasources.json"

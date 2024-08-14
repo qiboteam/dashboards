@@ -33,5 +33,30 @@ Its password can be changed and other users may be created by setting environmen
 A `.env` file will look like this:
 ``` bash
 ADMIN_PASSWORD=new_admin_password
-GRAFANA_USERS='[{"login":"first_user","password":"first_password"}, {"login":"second_user","password":"second_password","role":"Editor"}]'
+GRAFANA_USERS='[{"login":"first_user","password":"first_password"},{"login":"second_user","password":"second_password","role":"Editor"}]'
 ```
+
+## QPUs
+
+An optional list of QPUs can be provided to the initialization script in a json file.
+``` json
+{
+    "qpus": [
+        {
+            "name": "1st qpu name",
+            "qubits": 5
+        },
+        {
+            "name": "2nd qpu name",
+            "qubits": 3
+        },
+    ]
+}
+```
+For each QPU listed, the script generates a dashboard showing coherence times and assignment fidelity.
+The path of the json file can be saved in the `.env` file as:
+``` bash
+QPU_CONFIG_JSON_PATH=/path/to/json/file.json
+```
+
+A reference file (used by default) can be found at `grafana_configuration/config/qpu_config.json`.
