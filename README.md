@@ -36,6 +36,16 @@ ADMIN_PASSWORD=new_admin_password
 GRAFANA_USERS='[{"login":"first_user","password":"first_password"},{"login":"second_user","password":"second_password","role":"Editor"}]'
 ```
 
+## Plugins
+
+The Grafana Docker allows installation of plugins on startup, we've included some plugins needed for the automatic configuration of dashboards.
+The list of plugins can be found in the `.env` file, by default it is:
+``` bash
+GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource,nline-plotlyjs-panel,serrrios-statusoverview-panel
+```
+If you want to add or remove plugins, you can do so by changing the list in the `.env` file,
+Using the plugin name as it appears in the Grafana plugin repository url, i.e. `nline-plotlyjs-panel` in https://grafana.com/grafana/plugins/nline-plotlyjs-panel/.
+
 ## QPUs
 
 An optional list of QPUs can be provided to the initialization script in a json file.

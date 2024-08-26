@@ -11,6 +11,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    environment:
+      GF_INSTALL_PLUGINS: ${GF_INSTALL_PLUGINS}
   prometheus:
     image: prom/prometheus
     container_name: prometheus
