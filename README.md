@@ -39,7 +39,7 @@ GRAFANA_USERS='[{"login":"first_user","password":"first_password"},{"login":"sec
 ## Plugins
 
 The Grafana Docker allows installation of plugins on startup, we've included some plugins needed for the automatic configuration of dashboards.
-The list of plugins can be found in the `.env` file, by default it is:
+Please add the following line to the `.env` file to install the plugins, create the blank .env file if it doesn't exist.
 ``` bash
 GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource,nline-plotlyjs-panel,serrrios-statusoverview-panel
 ```
