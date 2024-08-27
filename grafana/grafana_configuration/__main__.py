@@ -75,8 +75,14 @@ def main():
     ]
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(GRAFANA_TEMPLATES_PATH))
     template = env.get_template("coherence_fidelity.json")
-    print(args.qpu_config)
-    qpu_configuration = json.loads(args.qpu_config.read_text())
+    # Work around for argparse bug
+    if args.qpu_config is None:
+        qpu_configuration = json.loads(
+            (Path(__file__).parent / "config" / "qpu_config.json").read_text()
+        )
+    else:
+        qpu_configuration = json.loads(args.qpu_config.read_text())
+    # Create dashboards for each qpu
     for qpu_config in qpu_configuration["qpus"]:
         json_string = template.render(
             qpu_name=qpu_config["name"],

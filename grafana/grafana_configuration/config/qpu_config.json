@@ -3,7 +3,8 @@
     [
         {
             "name": "dummy",
-            "qubits": 4
+            "qubits": 4,
+            "edges": []
         },
         {
             "name": "20q",
