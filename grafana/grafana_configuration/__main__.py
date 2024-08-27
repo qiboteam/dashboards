@@ -75,11 +75,13 @@ def main():
     ]
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(GRAFANA_TEMPLATES_PATH))
     template = env.get_template("coherence_fidelity.json")
+    print(args.qpu_config)
     qpu_configuration = json.loads(args.qpu_config.read_text())
     for qpu_config in qpu_configuration["qpus"]:
         json_string = template.render(
             qpu_name=qpu_config["name"],
             qubits=qpu_config["qubits"],
+            edges=qpu_config["edges"],
             metric_panels=metric_panels,
         )
         dashboards_configurations = json.loads(json_string)

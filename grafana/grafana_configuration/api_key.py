@@ -13,13 +13,21 @@ def find_admin_account_id() -> int:
         "name": "setup_grafana",
         "role": "Admin",
     }
-    response = requests.post(
-        f"{GRAFANA_URL}/serviceaccounts",
-        headers=API_CREATION_HTTP_HEADERS,
-        json=admin_id_json_data,
-        auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
-    )
-    return response.json()["id"]
+    try:
+        response = requests.get(
+            f"{GRAFANA_URL}/serviceaccounts/search?query=setup_grafana",
+            headers=API_CREATION_HTTP_HEADERS,
+            auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
+        )
+        return response.json()["serviceAccounts"][0]["id"]
+    except:
+        response = requests.post(
+            f"{GRAFANA_URL}/serviceaccounts",
+            headers=API_CREATION_HTTP_HEADERS,
+            json=admin_id_json_data,
+            auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
+        )
+        return response.json()["id"]
 
 
 def grafana_key() -> str:
@@ -30,10 +38,30 @@ def grafana_key() -> str:
     token_json_data = {
         "name": "setup_grafana-token",
     }
-    response = requests.post(
-        f"{GRAFANA_URL}/serviceaccounts/{account_id}/tokens",
-        headers=API_CREATION_HTTP_HEADERS,
-        json=token_json_data,
-        auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
-    )
-    return response.json()["key"]
+    try:
+        get_token_response = requests.get(
+            f"{GRAFANA_URL}/serviceaccounts/{account_id}/tokens",
+            headers=API_CREATION_HTTP_HEADERS,
+            auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
+        )
+        token_id = get_token_response.json()[0]["id"]
+        delete_response = requests.delete(
+            f"{GRAFANA_URL}/serviceaccounts/{account_id}/tokens/{token_id}",
+            headers=API_CREATION_HTTP_HEADERS,
+            auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
+        )
+        response_2 = requests.post(
+            f"{GRAFANA_URL}/serviceaccounts/{account_id}/tokens",
+            headers=API_CREATION_HTTP_HEADERS,
+            json=token_json_data,
+            auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
+        )
+        return response_2.json()["key"]
+    except:
+        response = requests.post(
+            f"{GRAFANA_URL}/serviceaccounts/{account_id}/tokens",
+            headers=API_CREATION_HTTP_HEADERS,
+            json=token_json_data,
+            auth=(ADMIN_USERNAME, ADMIN_PASSWORD),
+        )
+        return response.json()["key"]
