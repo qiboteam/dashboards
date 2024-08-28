@@ -6,4 +6,4 @@ RUN apk add openssh
 
 COPY . /app
 WORKDIR /app
-RUN pip install paramiko --break-system-packages
+RUN pip install . --break-system-packages
