@@ -2,11 +2,11 @@
 
 import collections
 import datetime as dt
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import yaml
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from qibocal.auto.output import Output
 from sqlalchemy import create_engine
@@ -97,8 +97,6 @@ def push_data_postgres(platform: str, qpu_data: QpuData, **kwargs):
 def export_metrics(
     qibocal_output_folder: Path, export_database: str = "pushgateway", **kwargs
 ):
-    import json
-
     platform = json.loads((qibocal_output_folder / "meta.json").read_text())["platform"]
     qpu_data = get_data(qibocal_output_folder)
     if export_database == "pushgateway":
