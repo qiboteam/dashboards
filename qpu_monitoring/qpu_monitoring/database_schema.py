@@ -20,8 +20,8 @@ class Qubit(Base):
     """QPU name."""
     t1: Mapped[float]
     """Qubit t1 in ns."""
-    # t2: Mapped[float]
-    # """Qubit t2 in ns."""
+    t2: Mapped[float]
+    """Qubit t2 in ns."""
     # t2_spin_echo: Mapped[float]
     # """Qubit t2 spin echo in ns."""
     assignment_fidelity: Mapped[float]
