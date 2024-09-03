@@ -76,12 +76,6 @@ def main(targets: list, platform_name: str, output_folder: str):
 
         check_chi2(ramsey_output, platform=e.platform, targets=targets)
 
-        # TODO: long without sweepers
-        # t2_echo_output = spin_echo(delay_between_pulses_start=10,
-        #                delay_between_pulses_end=100000,
-        #                delay_between_pulses_step=500,
-        #                unrolling=True,
-        #                nshots=1024)
 
         ro_char_output = e.readout_characterization(nshots=5000, delay=1000)
 
@@ -105,5 +99,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    print(args.targets, type(args.targets), type(args.targets[0]))
     main(targets=args.targets, platform_name=args.platform, output_folder=args.output)
