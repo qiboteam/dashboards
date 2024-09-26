@@ -1,8 +1,9 @@
 import argparse
 import json
 import logging
+from pathlib import Path
 
-from .utils import key_based_connect
+from .utils import copy_back_remote_report, key_based_connect
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,14 @@ def main():
             f"cd {qpu['platform']};"
             "OUTPUT_DIR=$(ls -t | head -1);"
             "echo $OUTPUT_DIR"
+        )
+        qibocal_report_folder_name = command_line_output.readlines()[0].rstrip()
+        copy_back_remote_report(
+            client,
+            qpu["platform"],
+            qibocal_report_folder_name,
+            "~/monitoring_reports",
+            Path.home() / "monitoring_reports",
         )
 
 

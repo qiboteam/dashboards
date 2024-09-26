@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional
 
 import paramiko
+import scp
 
 
 def key_based_connect(
@@ -25,3 +26,18 @@ def key_based_connect(
     client.set_missing_host_key_policy(policy)
     client.connect(host, username=username, pkey=pkey)
     return client
+
+
+def copy_back_remote_report(
+    ssh_client: paramiko.SSHClient,
+    platform: str,
+    report_directory_name: str,
+    remote_monitoring_path: str,
+    local_directory_path: Path,
+):
+    """Copy the qibocal output locally in the container."""
+    remote_report_path = f"{remote_monitoring_path}/{platform}/{report_directory_name}"
+    local_report_path = local_directory_path / platform / report_directory_name
+    local_report_path.mkdir(parents=True)
+    scp_client = scp.SCPClient(ssh_client.get_transport())
+    scp_client.get(remote_report_path, str(local_report_path.parent), recursive=True)
