@@ -20,7 +20,7 @@ def monitor_qpu(
     _, _, sbatch_errors = client.exec_command(
         "source .qpu_monitoring_env/bin/activate;"
         "python -m qpu_monitoring --slurm_configuration "
-        f"'{json.dumps([qpu_information])}' --qibolab_platforms_path $HOME/qibolab_platforms_qrc"
+        f"'{json.dumps(qpu_information)}' --qibolab_platforms_path $HOME/qibolab_platforms_qrc"
     )
     logger.info(sbatch_errors.readlines())
     # after sbatch finishes, copy back the results
@@ -58,9 +58,7 @@ def main():
     parser.add_argument("--slurm_configuration", type=str, default=None)
     args = parser.parse_args()
 
-    # slurm_configuration = json.loads(args.slurm_configuration)
-    slurm_configuration = '[{"partition":"qw11q","platform":"qw11q"}]'
-    slurm_configuration = json.loads(slurm_configuration)
+    slurm_configuration = json.loads(args.slurm_configuration)
     for qpu in slurm_configuration:
         monitor_qpu(qpu, args.host, args.username, args.private_key_password)
 

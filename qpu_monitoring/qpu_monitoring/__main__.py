@@ -122,17 +122,15 @@ def main():
     parser.add_argument("--slurm_configuration", type=str, nargs="?", default=None)
     parser.add_argument("--qibolab_platforms_path", type=Path, nargs="?", default=None)
     args = parser.parse_args()
+
     if args.slurm_configuration is None:
-        jobs = [SlurmJobInfo(None, None, None, args.qibolab_platforms_path)]
+        job = SlurmJobInfo(None, None, None, args.qibolab_platforms_path)
     else:
         slurm_configuration = json.loads(args.slurm_configuration)
-        jobs = [
-            SlurmJobInfo(**job_info, qibolab_platforms_path=args.qibolab_platforms_path)
-            for job_info in slurm_configuration
-        ]
-
-    with ThreadPool(len(jobs)) as p:
-        p.map(monitor_qpu, jobs)
+        job = SlurmJobInfo(
+            **slurm_configuration, qibolab_platforms_path=args.qibolab_platforms_path
+        )
+    monitor_qpu(job)
 
 
 if __name__ == "__main__":
