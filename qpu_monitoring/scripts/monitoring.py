@@ -57,14 +57,12 @@ def main(targets: list, platform_name: str, output_folder: str):
         update=False,
         force=True,
     ) as e:
-
         t1_output = e.t1(
             delay_before_readout_start=10,
             delay_before_readout_end=100000,
             delay_before_readout_step=500,
             nshots=1024,
         )
-
         check_chi2(t1_output, platform=e.platform, targets=targets)
 
         ramsey_output = e.ramsey(
@@ -73,12 +71,9 @@ def main(targets: list, platform_name: str, output_folder: str):
             delay_between_pulses_step=500,
             nshots=1024,
         )
-
         check_chi2(ramsey_output, platform=e.platform, targets=targets)
 
-
         ro_char_output = e.readout_characterization(nshots=5000, delay=1000)
-
         check_chi2(ro_char_output, platform=e.platform, targets=targets)
 
         report(e.path, e.history)
