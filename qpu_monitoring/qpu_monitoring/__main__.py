@@ -3,13 +3,10 @@ import datetime as dt
 import json
 import subprocess
 from dataclasses import dataclass
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
-
-from .metrics_export import export_metrics
 
 TEMPLATES = Path(__file__).parents[1] / "scripts"
 RUNCARD = Path(__file__).parents[1] / "runcards" / "monitor.yml"
@@ -84,13 +81,6 @@ def monitor_qpu(job_info: SlurmJobInfo):
     If platform is set to dummy, do not use slurm and run
     qq locally instead.
     """
-    postgres_info = {
-        "username": "dash_admin",
-        "password": "dash_admin",
-        "container": "localhost",
-        "port": 5432,
-        "database": "qpu_metrics",
-    }
     current_timestamp = dt.datetime.now().strftime(r"%Y%m%d_%H%M%S")
     try:
         script_path = SLURM_JOBS / job_info.platform
@@ -110,8 +100,6 @@ def monitor_qpu(job_info: SlurmJobInfo):
         else:
             # use sbatch
             subprocess.run([script_path / "slurm_monitor_submit.sh"], cwd=script_path)
-        # process acquired data
-        export_metrics(report_save_path, export_database="postgres", **postgres_info)
     except Exception as e:
         print(e)
         pass
