@@ -9,5 +9,6 @@ dependencies = [
     "scp",
     "sqlalchemy",
     "psycopg2",
+    "pyyaml",
     "qibocal"
 ]
