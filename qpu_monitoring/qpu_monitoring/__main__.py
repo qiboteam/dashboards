@@ -29,9 +29,11 @@ class SlurmJobInfo:
     partition: Optional[str]
     """Slurm partition on which to run monitoring.
     If set to None, run the script locally."""
-    platform: str
+    platform: Optional[str]
     """Qibolab platform on which to run the monitoring script.
     If set to None, default to dummy."""
+    targets: Optional[list[str]]
+    """List of targets to be monitored."""
     qibolab_platforms_path: Path
     """Path of the platforms for qibolab."""
 
@@ -39,6 +41,8 @@ class SlurmJobInfo:
         """If platform is set to None, default to "dummy"."""
         if self.platform is None:
             self.platform = "dummy"
+        if self.targets is None:
+            self.targets = [0]
 
 
 def generate_monitoring_script(
@@ -64,9 +68,10 @@ def generate_monitoring_script(
     monitoring_script = template.render(
         slurm_partition=job_info.partition,
         platform=job_info.platform,
-        runcard_path=RUNCARD,
+        targets=job_info.targets,
         report_path=report_save_path,
         qibolab_platforms_path=job_info.qibolab_platforms_path,
+        monitoring_script_path=Path(__file__).parents[1] / "scripts" / "monitoring.py",
     )
     monitoring_script_path.parent.mkdir(parents=True, exist_ok=True)
     monitoring_script_path.write_text(monitoring_script)
@@ -118,7 +123,7 @@ def main():
     parser.add_argument("--qibolab_platforms_path", type=Path, nargs="?", default=None)
     args = parser.parse_args()
     if args.slurm_configuration is None:
-        jobs = [SlurmJobInfo(None, None, args.qibolab_platforms_path)]
+        jobs = [SlurmJobInfo(None, None, None, args.qibolab_platforms_path)]
     else:
         slurm_configuration = json.loads(args.slurm_configuration)
         jobs = [
