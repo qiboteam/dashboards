@@ -1,0 +1,63 @@
+import json
+import logging
+from pathlib import Path
+
+from paramiko import SSHClient
+
+from .metrics_export import export_metrics
+from .ssh_utils import copy_back_remote_report, key_based_connect
+
+logger = logging.getLogger(__name__)
+
+
+def acquire(ssh_client: SSHClient, qpu_information: dict[str, str]):
+    """Acquire metrics from the remote cluster."""
+    _, _, sbatch_errors = ssh_client.exec_command(
+        "source .qpu_monitoring_env/bin/activate;"
+        "python -m qpu_monitoring --slurm_configuration "
+        f"'{json.dumps(qpu_information)}' --qibolab_platforms_path $HOME/qibolab_platforms_qrc"
+    )
+    logger.info(sbatch_errors.readlines())
+
+
+def retrieve_results(ssh_client: SSHClient, qpu_information: dict[str, str]) -> Path:
+    """after sbatch finishes, copy back the results."""
+    _, command_line_output, _ = ssh_client.exec_command(
+        "cd monitoring_reports;"
+        f"cd {qpu_information['platform']};"
+        "OUTPUT_DIR=$(ls -t | head -1);"
+        "echo $OUTPUT_DIR"
+    )
+    qibocal_report_folder_name = command_line_output.readlines()[0].rstrip()
+    return copy_back_remote_report(
+        ssh_client,
+        qpu_information["platform"],
+        qibocal_report_folder_name,
+        "~/monitoring_reports",
+        Path.home() / "monitoring_reports",
+    )
+
+
+def sql_export(report_save_path: Path):
+    # export results to the database
+    postgres_info = {
+        "username": "dash_admin",
+        "password": "dash_admin",
+        "container": "postgres",
+        "port": 5432,
+        "database": "qpu_metrics",
+    }
+    export_metrics(report_save_path, export_database="postgres", **postgres_info)
+
+
+def monitor_qpu(
+    qpu_information: dict[str, str],
+    hostname: str,
+    username: str,
+    private_key_password: str = None,
+):
+    """Run monitoring on the specified qpu and export results."""
+    client = key_based_connect(hostname, username, private_key_password)
+    acquire(client, qpu_information)
+    report_save_path = retrieve_results(client, qpu_information)
+    sql_export(report_save_path)
