@@ -2,18 +2,25 @@
     {
         "title": "{{ qpu_name }}",
         "rows": [
+            {% set ns = namespace(y_position=0) %}
+            {% set panels_per_row = panels_per_row or 4 %}
+            {% set panel_height_small = panel_height_small or 2 %}
             {% for panel in metric_panels %}
-            {% set panelloop = loop %}
             {
                 "title": "{{ panel.title }}",
-                "grid_pos": {"x":0, "y": {{ panelloop.index * (panel.height + 1) }}},
+                "grid_pos": { "x": 0, "y": {{ ns.y_position }} },
                 "panels": [
                     {% for qubit_id in range(qubits) %}
                     {
-                        "type": "TimeSeries",
+                        "type": "Stat",
                         "value": {
-                            "title": "",
-                            "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 2 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": {{ panel.height }}},
+                            "title": "Qubit {{ qubit_id }}",
+                            "grid_pos": {
+                                "x": {{ (qubit_id % panels_per_row) * panel.width }},
+                                "y": {{ ns.y_position + 1 + (qubit_id // panels_per_row) * (panel_height_small + panel.height) }},
+                                "w": {{ panel.width }},
+                                "h": {{ panel_height_small }}
+                            },
                             "unit": "{{ panel.unit }}",
                             "targets": [
                                 {% for metric in panel.metrics %}
@@ -63,10 +70,15 @@
                         }
                     },
                     {
-                        "type": "Stat",
+                        "type": "TimeSeries",
                         "value": {
-                            "title": "Qubit {{ qubit_id }}",
-                            "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 1 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": 2},
+                            "title": "",
+                            "grid_pos": {
+                                "x": {{ (qubit_id % panels_per_row) * panel.width }},
+                                "y": {{ ns.y_position + 1 + (qubit_id // panels_per_row) * (panel_height_small + panel.height) + panel_height_small }},
+                                "w": {{ panel.width }},
+                                "h": {{ panel.height }}
+                            },
                             "unit": "{{ panel.unit }}",
                             "targets": [
                                 {% for metric in panel.metrics %}
@@ -117,7 +129,9 @@
                     }{% if not loop.last %},{% endif %}
                     {% endfor %}
                 ]
-            }{% if not loop.last %},{% endif %}
+            }
+            {% set ns.y_position = ns.y_position +  1 + (qubits // panels_per_row) * (panel_height_small + panel.height) + (panel_height_small + panel.height) %}
+            {% if not loop.last %},{% endif %}
             {% endfor %}
         ]
     }
