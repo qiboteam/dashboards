@@ -60,6 +60,10 @@ services:
     environment:
       GRAFANA_USERS: ${GRAFANA_USERS}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      CONFIG_PATH: ${CONFIG_PATH}
+      QPU_CONFIG_JSON_PATH: ${QPU_CONFIG_JSON_PATH}
+    volumes:
+      - ${CONFIG_PATH}:${QPU_CONFIG_JSON_PATH}:ro
     networks:
       - my_network
 networks:
