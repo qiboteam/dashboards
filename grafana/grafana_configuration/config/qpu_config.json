@@ -3,7 +3,7 @@
     [
         {
             "name": "dummy",
-            "qubits": 4
+            "qubits": [0, 1, 2, 3, 4]
         }
     ]
 }

@@ -8,7 +8,7 @@
                 "title": "{{ panel.title }}",
                 "grid_pos": {"x":0, "y": {{ panelloop.index * (panel.height + 1) }}},
                 "panels": [
-                    {% for qubit_id in range(qubits) %}
+                    {% for qubit_id in qubits %}
                     {
                         "type": "TimeSeries",
                         "value": {
