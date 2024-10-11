@@ -7,14 +7,6 @@ Docker containers can be set up with
 docker compose up
 ```
 
-### qpu_monitoring
-
-`qpu_monitoring` requires `psycopg2` which in turn requires `pg_config`.
-`pg_config` is in `postgresql-devel`, which can be installed with:
-``` bash
-apt install libpq-dev
-```
-
 ## Containers
 
 Currently the following containers are created:
@@ -64,3 +56,8 @@ QPU_CONFIG_JSON_PATH_CONTAINER=/conf/qpu_config.json
 ```
 
 A reference file (used by default) can be found at `grafana_configuration/config/qpu_config.json`.
+
+### Monitoring on slurm clusters
+
+Monitoring of QPUs on slurm clusters can be performed by the `remote_monitoring` container.
+In order to connect to the cluster over ssh, the own user's ssh key is required.
