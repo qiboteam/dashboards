@@ -25,6 +25,9 @@ Currently the following containers are created:
  - `pushgateway` containing https://github.com/prometheus/pushgateway server, exposing port `9091`.
  It can be used for sending metrics, which will then be scraped by Prometheus.
  - `monitoring` containing a Ubuntu image with `qibocal` to be restarted at regular intervals for acquiring QPU metrics.
+ - `postgres` running PostgreSQL 15.6 and containing the database for all QPU metrics acquired.
+ - `remote_monitoring` containing an Alpine image that connects to the QPU cluster via SSH.
+    After the experiment finishes, the container acquires all measurements and uploads them to `postgres`.
 
 ## Grafana users
 
