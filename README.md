@@ -47,11 +47,11 @@ An optional list of QPUs can be provided to the initialization script in a json 
     "qpus": [
         {
             "name": "1st qpu name",
-            "qubits": 5
+            "qubits": [0, 1, 2, 3, 5]
         },
         {
             "name": "2nd qpu name",
-            "qubits": 3
+            "qubits": ["0", "1", "2", "3"]
         },
     ]
 }
