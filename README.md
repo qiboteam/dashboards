@@ -73,6 +73,12 @@ cd dashboards/qpu_monitoring
 pip install .
 ```
 
+The list of qpu (and qubits) on which to run the monitoring needs to be defined in the `.env` file:
+
+``` bash
+MONITORING_CONFIGURATION='[{"partition":"slurm_partition_name","platform":"qpu_name","targets":["0", "1"]}]'
+```
+
 Every time the monitoring container starts, a single monitoring instance is run. In order to monitor again, the
 container needs to be restarted with the following command:
 
