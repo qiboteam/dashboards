@@ -66,6 +66,18 @@ services:
       - ${QPU_CONFIG_JSON_PATH}:${QPU_CONFIG_JSON_PATH_CONTAINER}:ro
     networks:
       - my_network
+  remote_monitoring:
+    build: remote_monitoring/.
+    container_name: remote_monitoring
+    environment:
+      REMOTE_HOST: ${REMOTE_HOST}
+      REMOTE_USERNAME: ${REMOTE_USERNAME}
+      SSH_KEY_PASSWORD: ${SSH_KEY_PASSWORD}
+      MONITORING_CONFIGURATION: ${MONITORING_CONFIGURATION}
+    networks:
+      - my_network
+    volumes:
+      - ~/.ssh:/root/.ssh:ro
 networks:
   my_network:
     driver: bridge
