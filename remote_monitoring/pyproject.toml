@@ -10,5 +10,5 @@ dependencies = [
     "sqlalchemy",
     "psycopg2",
     "pyyaml",
-    "qibocal"
+    "qibocal==0.1.0"
 ]
