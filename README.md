@@ -61,3 +61,14 @@ A reference file (used by default) can be found at `grafana_configuration/config
 
 Monitoring of QPUs on slurm clusters can be performed by the `remote_monitoring` container.
 In order to connect to the cluster over ssh, the own user's ssh key is required.
+
+Additionally, after the ssh connection in enstablished, the conainer assumes that a Python virtual environment
+named `.qpu_monitoring_env` is located in the home directory. Assuming that the `dashboards` repository
+has been cloned to the home directory, the environment can be created with the following commands:
+
+``` bash
+cd ~
+python -m venv .qpu_monitoring_env
+cd dashboards/qpu_monitoring
+pip install .
+```
