@@ -72,3 +72,10 @@ python -m venv .qpu_monitoring_env
 cd dashboards/qpu_monitoring
 pip install .
 ```
+
+Every time the monitoring container starts, a single monitoring instance is run. In order to monitor again, the
+container needs to be restarted with the following command:
+
+``` bash
+docker restart remote_monitoring
+```
