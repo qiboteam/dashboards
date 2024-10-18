@@ -82,27 +82,32 @@ def monitor_qpu(job_info: SlurmJobInfo):
     qq locally instead.
     """
     current_timestamp = dt.datetime.now().strftime(r"%Y%m%d_%H%M%S")
-    try:
-        script_path = SLURM_JOBS / job_info.platform
-        report_save_path = REPORTS / job_info.platform / current_timestamp
-        generate_monitoring_script(
-            job_info,
-            script_path / "slurm_monitor_submit.sh",
+    script_path = SLURM_JOBS / job_info.platform
+    report_save_path = REPORTS / job_info.platform / current_timestamp
+    generate_monitoring_script(
+        job_info,
+        script_path / "slurm_monitor_submit.sh",
+    )
+    generate_monitoring_script(
+        job_info,
+        script_path / "qpu_monitor_job.sh",
+        report_save_path,
+    )
+    # run acquisition job on slurm
+    if job_info.partition is None:
+        monitoring_output = subprocess.run(
+            [script_path / "qpu_monitor_job.sh"], capture_output=True, text=True
         )
-        generate_monitoring_script(
-            job_info,
-            script_path / "qpu_monitor_job.sh",
-            report_save_path,
+    else:
+        # use sbatch
+        monitoring_output = subprocess.run(
+            [script_path / "slurm_monitor_submit.sh"],
+            cwd=script_path,
+            capture_output=True,
+            text=True,
         )
-        # run acquisition job on slurm
-        if job_info.partition is None:
-            subprocess.run([script_path / "qpu_monitor_job.sh"])
-        else:
-            # use sbatch
-            subprocess.run([script_path / "slurm_monitor_submit.sh"], cwd=script_path)
-    except Exception as e:
-        print(e)
-        pass
+    if "sbatch: error: invalid partition specified:" in monitoring_output.stderr:
+        raise ValueError(monitoring_output.stderr)
 
 
 def main():
