@@ -12,12 +12,20 @@ logger = logging.getLogger(__name__)
 
 def acquire(ssh_client: SSHClient, qpu_information: dict[str, str]):
     """Acquire metrics from the remote cluster."""
-    _, _, sbatch_errors = ssh_client.exec_command(
+    _, sbatch_output, sbatch_errors = ssh_client.exec_command(
         "source .qpu_monitoring_env/bin/activate;"
         "python -m qpu_monitoring --slurm_configuration "
         f"'{json.dumps(qpu_information)}' --qibolab_platforms_path $HOME/qibolab_platforms_qrc"
     )
-    logger.info(sbatch_errors.readlines())
+    logger.info(sbatch_output.readlines())
+    error_message = sbatch_errors.readlines()
+    if len(error_message) > 0:
+        logger.error(error_message)
+        if [
+            "sbatch: error: invalid partition specified:" in message
+            for message in error_message
+        ]:
+            raise Exception(error_message)
 
 
 def retrieve_results(ssh_client: SSHClient, qpu_information: dict[str, str]) -> Path:
