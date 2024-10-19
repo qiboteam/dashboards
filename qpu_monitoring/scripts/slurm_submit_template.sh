@@ -7,4 +7,5 @@ then
     wait
 else
     echo "Another job is currently running for {{ platform }} on {{ slurm_partition }}"
+    exit 1
 fi
