@@ -28,6 +28,9 @@ def acquire(ssh_client: SSHClient, qpu_information: dict[str, str]):
             raise Exception(message)
         if f"Platform {qpu_information['platform']} not found." in message:
             raise ValueError(message)
+        if "Traceback (most recent call last):" in message:
+            # Error in the python code submitted to slurm (or run locally)
+            raise Exception(message)
 
 
 def retrieve_results(ssh_client: SSHClient, qpu_information: dict[str, str]) -> Path:

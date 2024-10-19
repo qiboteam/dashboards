@@ -114,6 +114,9 @@ def monitor_qpu(job_info: SlurmJobInfo):
         raise Exception(stdout_message)
     if f"Platform {job_info.platform} not found" in stdout_message:
         raise ValueError(stdout_message)
+    if "Traceback (most recent call last):" in stdout_message:
+        # Error in the python code submitted to slurm (or run locally)
+        raise Exception(stdout_message)
 
 
 def main():
