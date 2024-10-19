@@ -26,6 +26,11 @@ def acquire(ssh_client: SSHClient, qpu_information: dict[str, str]):
             for message in error_message
         ]:
             raise Exception(error_message)
+        if [
+            "Another job is currently running for " in message
+            for message in error_message
+        ]:
+            raise Exception(error_message)
 
 
 def retrieve_results(ssh_client: SSHClient, qpu_information: dict[str, str]) -> Path:

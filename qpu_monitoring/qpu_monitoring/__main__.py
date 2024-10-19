@@ -108,6 +108,8 @@ def monitor_qpu(job_info: SlurmJobInfo):
         )
     if "sbatch: error: invalid partition specified:" in monitoring_output.stderr:
         raise ValueError(monitoring_output.stderr)
+    if "Another job is currently running for " in monitoring_output.stdout:
+        raise Exception(monitoring_output.stdout)
 
 
 def main():
