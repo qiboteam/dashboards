@@ -21,16 +21,13 @@ def acquire(ssh_client: SSHClient, qpu_information: dict[str, str]):
     error_message = sbatch_errors.readlines()
     if len(error_message) > 0:
         logger.error(error_message)
-        if [
-            "sbatch: error: invalid partition specified:" in message
-            for message in error_message
-        ]:
-            raise ValueError(error_message)
-        if [
-            "Another job is currently running for " in message
-            for message in error_message
-        ]:
-            raise Exception(error_message)
+        message = "".join(error_message)
+        if "sbatch: error: invalid partition specified:" in message:
+            raise ValueError(message)
+        if "Another job is currently running for " in message:
+            raise Exception(message)
+        if f"Platform {qpu_information['platform']} not found." in message:
+            raise ValueError(message)
 
 
 def retrieve_results(ssh_client: SSHClient, qpu_information: dict[str, str]) -> Path:
