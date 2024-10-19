@@ -25,7 +25,7 @@ def acquire(ssh_client: SSHClient, qpu_information: dict[str, str]):
             "sbatch: error: invalid partition specified:" in message
             for message in error_message
         ]:
-            raise Exception(error_message)
+            raise ValueError(error_message)
         if [
             "Another job is currently running for " in message
             for message in error_message
