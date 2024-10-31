@@ -55,9 +55,9 @@ services:
       GRAFANA_USERS: ${GRAFANA_USERS}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       QPU_CONFIG_JSON_PATH: ${QPU_CONFIG_JSON_PATH}
-      QPU_CONFIG_JSON_PATH_CONTAINER: ${QPU_CONFIG_JSON_PATH_CONTAINER}
+      QPU_CONFIG_JSON_PATH_CONTAINER: /conf/qpu_config.json
     volumes:
-      - ${QPU_CONFIG_JSON_PATH}:${QPU_CONFIG_JSON_PATH_CONTAINER}:ro
+      - ${QPU_CONFIG_JSON_PATH}:/conf/qpu_config.json:ro
     networks:
       - my_network
   remote_monitoring:
