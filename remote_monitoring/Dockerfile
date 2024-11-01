@@ -9,4 +9,4 @@ COPY . /app
 WORKDIR /app
 RUN python3 -m pip install .
 
-CMD python3 -m remote_monitoring --host $REMOTE_HOST --username $REMOTE_USERNAME --private_key_password $SSH_KEY_PASSWORD --slurm_configuration $MONITORING_CONFIGURATION
+CMD python3 -m remote_monitoring --host $REMOTE_HOST --username $REMOTE_USERNAME --private_key_password $SSH_KEY_PASSWORD --slurm_configuration $MONITORING_CONFIGURATION --qibolab_platforms_path $QIBOLAB_PLATFORMS_PATH

@@ -10,12 +10,14 @@ from .ssh_utils import copy_back_remote_report, key_based_connect
 logger = logging.getLogger(__name__)
 
 
-def acquire(ssh_client: SSHClient, qpu_information: dict[str, str]):
+def acquire(
+    ssh_client: SSHClient, qpu_information: dict[str, str], qibolab_platforms_path: Path
+):
     """Acquire metrics from the remote cluster."""
     _, sbatch_output, sbatch_errors = ssh_client.exec_command(
         "source .qpu_monitoring_env/bin/activate;"
         "python -m qpu_monitoring --slurm_configuration "
-        f"'{json.dumps(qpu_information)}' --qibolab_platforms_path $HOME/qibolab_platforms_qrc"
+        f"'{json.dumps(qpu_information)}' --qibolab_platforms_path {qibolab_platforms_path}"
     )
     logger.info(sbatch_output.readlines())
     error_message = sbatch_errors.readlines()
@@ -67,10 +69,11 @@ def monitor_qpu(
     qpu_information: dict[str, str],
     hostname: str,
     username: str,
+    qibolab_platforms_path: Path,
     private_key_password: str = None,
 ):
     """Run monitoring on the specified qpu and export results."""
     client = key_based_connect(hostname, username, private_key_password)
-    acquire(client, qpu_information)
+    acquire(client, qpu_information, qibolab_platforms_path)
     report_save_path = retrieve_results(client, qpu_information)
     sql_export(report_save_path)
