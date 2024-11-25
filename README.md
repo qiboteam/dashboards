@@ -7,6 +7,9 @@ Docker containers can be set up with
 docker compose up
 ```
 
+**_NOTE:_**  Docker should be used as a non-root user:
+https://docs.docker.com/engine/install/linux-postinstall/
+
 ## Containers
 
 Currently the following containers are created:
