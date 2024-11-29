@@ -6,7 +6,7 @@
             {% set panelloop = loop %}
             {
                 "title": "{{ panel.title }}",
-                "grid_pos": {"x":0, "y": {{ panelloop.index * (panel.height + 1) }}},
+                "grid_pos": {"x":0, "y": {{ 20 + panelloop.index * (panel.height + 1) }}},
                 "panels": [
                     {% for qubit_id in range(qubits) %}
                     {
@@ -21,7 +21,7 @@
                                     "type": "Target",
                                     "value": {
                                         "datasource": "postgres",
-                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='{{ qpu_name }}' AND qubit_id={{ qubit_id }}",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name=\"{{ qpu_name }}\" AND qubit_id={{ qubit_id }}",
                                         "legendFormat": "{{ metric.name }}",
                                         "color": "{{ metric.color }}",
                                         "sql": {
@@ -66,7 +66,7 @@
                         "type": "Stat",
                         "value": {
                             "title": "Qubit {{ qubit_id }}",
-                            "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 1 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": 2},
+                            "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 21 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": 2},
                             "unit": "{{ panel.unit }}",
                             "targets": [
                                 {% for metric in panel.metrics %}
@@ -74,7 +74,7 @@
                                     "type": "Target",
                                     "value": {
                                         "datasource": "postgres",
-                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='{{ qpu_name }}' AND qubit_id={{ qubit_id }}",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name=\"{{ qpu_name }}\" AND qubit_id={{ qubit_id }}",
                                         "legendFormat": "{{ metric.name }}",
                                         "color": "{{ metric.color }}",
                                         "sql": {
