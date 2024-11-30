@@ -7,13 +7,8 @@ Docker containers can be set up with
 docker compose up
 ```
 
-### qpu_monitoring
-
-`qpu_monitoring` requires `psycopg2` which in turn requires `pg_config`.
-`pg_config` is in `postgresql-devel`, which can be installed with:
-``` bash
-apt install libpq-dev
-```
+**_NOTE:_**  Docker should be used as a non-root user:
+https://docs.docker.com/engine/install/linux-postinstall/
 
 ## Containers
 
@@ -25,6 +20,9 @@ Currently the following containers are created:
  - `pushgateway` containing https://github.com/prometheus/pushgateway server, exposing port `9091`.
  It can be used for sending metrics, which will then be scraped by Prometheus.
  - `monitoring` containing a Ubuntu image with `qibocal` to be restarted at regular intervals for acquiring QPU metrics.
+ - `postgres` running PostgreSQL 15.6 and containing the database for all QPU metrics acquired.
+ - `remote_monitoring` containing an Alpine image that connects to the QPU cluster via SSH.
+    After the experiment finishes, the container acquires all measurements and uploads them to `postgres`.
 
 ## Grafana users
 
@@ -44,11 +42,11 @@ An optional list of QPUs can be provided to the initialization script in a json 
     "qpus": [
         {
             "name": "1st qpu name",
-            "qubits": 5
+            "qubits": [0, 1, 2, 3, 5]
         },
         {
             "name": "2nd qpu name",
-            "qubits": 3
+            "qubits": ["0", "1", "2", "3"]
         },
     ]
 }
@@ -56,7 +54,42 @@ An optional list of QPUs can be provided to the initialization script in a json 
 For each QPU listed, the script generates a dashboard showing coherence times and assignment fidelity.
 The path of the json file can be saved in the `.env` file as:
 ``` bash
-QPU_CONFIG_JSON_PATH=/path/to/json/file.json
+QPU_CONFIG_JSON_PATH=/path/to/local/json/file.json
 ```
 
-A reference file (used by default) can be found at `grafana_configuration/config/qpu_config.json`.
+A reference file can be found at `grafana_configuration/config/qpu_config.json`.
+
+### Monitoring on slurm clusters
+
+Monitoring of QPUs on slurm clusters can be performed by the `remote_monitoring` container.
+In order to connect to the cluster over ssh, the own user's ssh key is required.
+
+Additionally, after the ssh connection in enstablished, the conainer assumes that a Python virtual environment
+named `.qpu_monitoring_env` is located in the home directory. Assuming that the `dashboards` repository
+has been cloned to the home directory, the environment can be created with the following commands:
+
+``` bash
+cd ~
+python -m venv .qpu_monitoring_env
+cd dashboards/qpu_monitoring
+pip install .
+```
+
+The list of qpu (and qubits) on which to run the monitoring needs to be defined in the `.env` file:
+
+``` bash
+MONITORING_CONFIGURATION='[{"partition":"slurm_partition_name","platform":"qpu_name","targets":["0", "1"]}]'
+```
+
+The path to the `qibolab` platforms used by the monitoring script need to be specified in the `.env` file:
+
+``` bash
+QIBOLAB_PLATFORMS_PATH=/path/to/qibolab/platforms/directory
+```
+
+Every time the monitoring container starts, a single monitoring instance is run. In order to monitor again, the
+container needs to be restarted with the following command:
+
+``` bash
+docker restart remote_monitoring
+```

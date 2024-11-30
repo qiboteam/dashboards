@@ -66,6 +66,7 @@ def main(targets: list, platform_name: str, output_folder: str):
         check_chi2(t1_output, platform=e.platform, targets=targets)
 
         ramsey_output = e.ramsey(
+            detuning=None,
             delay_between_pulses_start=10,
             delay_between_pulses_end=100000,
             delay_between_pulses_step=500,

@@ -14,7 +14,7 @@ class Qubit(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     """Primary key."""
-    qubit_id: Mapped[int]
+    qubit_id: Mapped[str]
     """Qubit id."""
     qpu_name: Mapped[str]
     """QPU name."""
