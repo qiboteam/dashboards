@@ -131,7 +131,7 @@
                     {% endfor %}
                 ]
             }
-            {% set ns.y_position = ns.y_position +  1 + (qubits // panels_per_row) * (panel_height_small + panel.height) + (panel_height_small + panel.height) %}
+            {% set ns.y_position = ns.y_position +  1 + (qubits|length // panels_per_row) * (panel_height_small + panel.height) + (panel_height_small + panel.height) %}
             {% if not loop.last %},{% endif %}
             {% endfor %}
         ]
