@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import yaml
 from qibocal.auto.output import Output
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
