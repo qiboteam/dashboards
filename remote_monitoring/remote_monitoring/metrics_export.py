@@ -2,6 +2,7 @@
 
 import collections
 import datetime as dt
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -79,7 +80,6 @@ def export_metrics(
     # platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
     #     "platform"
     # ]
-    import json
 
     print(list(qibocal_output_folder.iterdir()))
     platform = json.loads((qibocal_output_folder / "meta.json").read_text())["platform"]
