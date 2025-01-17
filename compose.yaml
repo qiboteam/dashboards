@@ -15,7 +15,7 @@ services:
       GF_INSTALL_PLUGINS: ${GF_INSTALL_PLUGINS}
       GF_PATHS_PROVISIONING: ${GF_PATHS_PROVISIONING}
     volumes:
-      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/grafana_configuration/provisioning/datasources:/usr/share/grafana/provisioning/datasources
   prometheus:
     image: prom/prometheus
     container_name: prometheus

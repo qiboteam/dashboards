@@ -165,8 +165,7 @@ class NodeGraph(Panel):
                   "columns": self.AColumns,
                   "data": self.AData,
                   "datasource": {
-                    "type": "yesoreyeram-infinity-datasource",
-                    "uid": "be5anox316c5ca"
+                    "type": "yesoreyeram-infinity-datasource"
                   },
                   "filters": self.AFilters,
                   "format": self.AFormat,
