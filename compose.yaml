@@ -19,8 +19,6 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
-    ports:
-      - 9090:9090
     networks:
       - my_network
     volumes:
@@ -32,15 +30,11 @@ services:
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway
-    ports:
-      - 9091:9091
     networks:
       - my_network
   postgres:
     image: postgres:15.6
     container_name: postgres
-    ports:
-      - 5432:5432
     networks:
       - my_network
     environment:
@@ -65,8 +59,25 @@ services:
     environment:
       GRAFANA_USERS: ${GRAFANA_USERS}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      QPU_CONFIG_JSON_PATH: ${QPU_CONFIG_JSON_PATH}
+      QPU_CONFIG_JSON_PATH_CONTAINER: /conf/qpu_config.json
+    volumes:
+      - ${QPU_CONFIG_JSON_PATH}:/conf/qpu_config.json:ro
     networks:
       - my_network
+  remote_monitoring:
+    build: remote_monitoring/.
+    container_name: remote_monitoring
+    environment:
+      REMOTE_HOST: ${REMOTE_HOST}
+      REMOTE_USERNAME: ${REMOTE_USERNAME}
+      SSH_KEY_PASSWORD: ${SSH_KEY_PASSWORD}
+      QIBOLAB_PLATFORMS_PATH: ${QIBOLAB_PLATFORMS_PATH}
+      MONITORING_CONFIGURATION: ${MONITORING_CONFIGURATION}
+    networks:
+      - my_network
+    volumes:
+      - ~/.ssh:/root/.ssh:ro
 networks:
   my_network:
     driver: bridge

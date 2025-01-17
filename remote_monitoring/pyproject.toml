@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "remote_monitoring"
+version = "0.0.1"
+dependencies = [
+    "paramiko",
+    "scp",
+    "sqlalchemy",
+    "psycopg2",
+    "pyyaml",
+    "qibocal==0.1.0",
+    "qibo<0.2.13"
+]

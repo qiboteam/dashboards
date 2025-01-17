@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from qibocal.auto.output import Output
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -35,8 +34,10 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     for task_id, result in out.history.items():
         task_id = task_id.id
         metric = task_id
-        if task_id == "readout characterization":
+        if task_id == "readout_characterization":
             metric = "assignment_fidelity"
+        if task_id == "ramsey":
+            metric = "t2"
 
         metric_values = getattr(result.results, metric)
         for qubit_id, qubit_metric in metric_values.items():
@@ -44,24 +45,6 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
                 qubit_metric = qubit_metric[0]
             qpu_data[qubit_id][metric] = qubit_metric
     return QpuData(qpu_data, acquisition_time)
-
-
-def push_data_prometheus(platform: str, qpu_data: QpuData):
-    registry = CollectorRegistry()
-    registry_gauges = {}
-    for qubit_id, qubit_data in qpu_data.qubit_metrics.items():
-        for metric in qubit_data:
-            gauge = Gauge(
-                f"{platform}_{metric}_{qubit_id}",
-                f"{platform}_{metric}_{qubit_id}",
-                registry=registry,
-            )
-            registry_gauges[(qubit_id, metric)] = gauge
-
-    for qubit_id, qubit_data in qpu_data.qubit_metrics.items():
-        for metric_name, metric_value in qubit_data.items():
-            registry_gauges[(qubit_id, metric_name)].set(metric_value)
-    push_to_gateway("localhost:9091", job="pushgateway", registry=registry)
 
 
 def postgres_url(
@@ -93,13 +76,15 @@ def push_data_postgres(platform: str, qpu_data: QpuData, **kwargs):
 def export_metrics(
     qibocal_output_folder: Path, export_database: str = "pushgateway", **kwargs
 ):
-    platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
-        "platform"
-    ]
+    # platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
+    #     "platform"
+    # ]
+    import json
+
+    print(list(qibocal_output_folder.iterdir()))
+    platform = json.loads((qibocal_output_folder / "meta.json").read_text())["platform"]
     qpu_data = get_data(qibocal_output_folder)
-    if export_database == "pushgateway":
-        push_data_prometheus(platform, qpu_data)
-    elif export_database == "postgres":
+    if export_database == "postgres":
         push_data_postgres(platform, qpu_data, **kwargs)
     else:
         raise NotImplementedError

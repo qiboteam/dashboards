@@ -4,4 +4,4 @@
 #SBATCH -o slurm.out
 
 export QIBOLAB_PLATFORMS={{ qibolab_platforms_path }}
-qq auto {{ runcard_path }} --platform {{ platform }} -o {{ report_path }} -f
+python {{ monitoring_script_path }} --platform {{ platform }} --output {{ report_path }} --targets {{ targets }}

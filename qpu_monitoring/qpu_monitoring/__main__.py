@@ -3,13 +3,10 @@ import datetime as dt
 import json
 import subprocess
 from dataclasses import dataclass
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
-
-from .metrics_export import export_metrics
 
 TEMPLATES = Path(__file__).parents[1] / "scripts"
 RUNCARD = Path(__file__).parents[1] / "runcards" / "monitor.yml"
@@ -29,9 +26,11 @@ class SlurmJobInfo:
     partition: Optional[str]
     """Slurm partition on which to run monitoring.
     If set to None, run the script locally."""
-    platform: str
+    platform: Optional[str]
     """Qibolab platform on which to run the monitoring script.
     If set to None, default to dummy."""
+    targets: Optional[list[str]]
+    """List of targets to be monitored."""
     qibolab_platforms_path: Path
     """Path of the platforms for qibolab."""
 
@@ -39,6 +38,8 @@ class SlurmJobInfo:
         """If platform is set to None, default to "dummy"."""
         if self.platform is None:
             self.platform = "dummy"
+        if self.targets is None:
+            self.targets = [0]
 
 
 def generate_monitoring_script(
@@ -64,9 +65,10 @@ def generate_monitoring_script(
     monitoring_script = template.render(
         slurm_partition=job_info.partition,
         platform=job_info.platform,
-        runcard_path=RUNCARD,
+        targets=" ".join(job_info.targets),
         report_path=report_save_path,
         qibolab_platforms_path=job_info.qibolab_platforms_path,
+        monitoring_script_path=Path(__file__).parents[1] / "scripts" / "monitoring.py",
     )
     monitoring_script_path.parent.mkdir(parents=True, exist_ok=True)
     monitoring_script_path.write_text(monitoring_script)
@@ -79,37 +81,42 @@ def monitor_qpu(job_info: SlurmJobInfo):
     If platform is set to dummy, do not use slurm and run
     qq locally instead.
     """
-    postgres_info = {
-        "username": "dash_admin",
-        "password": "dash_admin",
-        "container": "localhost",
-        "port": 5432,
-        "database": "qpu_metrics",
-    }
     current_timestamp = dt.datetime.now().strftime(r"%Y%m%d_%H%M%S")
-    try:
-        script_path = SLURM_JOBS / job_info.platform
-        report_save_path = REPORTS / job_info.platform / current_timestamp
-        generate_monitoring_script(
-            job_info,
-            script_path / "slurm_monitor_submit.sh",
+    script_path = SLURM_JOBS / job_info.platform
+    report_save_path = REPORTS / job_info.platform / current_timestamp
+    generate_monitoring_script(
+        job_info,
+        script_path / "slurm_monitor_submit.sh",
+    )
+    generate_monitoring_script(
+        job_info,
+        script_path / "qpu_monitor_job.sh",
+        report_save_path,
+    )
+    # run acquisition job on slurm
+    if job_info.partition is None:
+        monitoring_output = subprocess.run(
+            [script_path / "qpu_monitor_job.sh"], capture_output=True, text=True
         )
-        generate_monitoring_script(
-            job_info,
-            script_path / "qpu_monitor_job.sh",
-            report_save_path,
+    else:
+        # use sbatch
+        monitoring_output = subprocess.run(
+            [script_path / "slurm_monitor_submit.sh"],
+            cwd=script_path,
+            capture_output=True,
+            text=True,
         )
-        # run acquisition job on slurm
-        if job_info.partition is None:
-            subprocess.run([script_path / "qpu_monitor_job.sh"])
-        else:
-            # use sbatch
-            subprocess.run([script_path / "slurm_monitor_submit.sh"], cwd=script_path)
-        # process acquired data
-        export_metrics(report_save_path, export_database="postgres", **postgres_info)
-    except Exception as e:
-        print(e)
-        pass
+    stdout_message = "".join(monitoring_output.stdout)
+    stderr_message = "".join(monitoring_output.stderr)
+    if "sbatch: error: invalid partition specified:" in stderr_message:
+        raise ValueError(stderr_message)
+    if "Another job is currently running for " in stdout_message:
+        raise Exception(stdout_message)
+    if f"Platform {job_info.platform} not found" in stdout_message:
+        raise ValueError(stdout_message)
+    if "Traceback (most recent call last):" in stdout_message:
+        # Error in the python code submitted to slurm (or run locally)
+        raise Exception(stdout_message)
 
 
 def main():
@@ -117,17 +124,15 @@ def main():
     parser.add_argument("--slurm_configuration", type=str, nargs="?", default=None)
     parser.add_argument("--qibolab_platforms_path", type=Path, nargs="?", default=None)
     args = parser.parse_args()
+
     if args.slurm_configuration is None:
-        jobs = [SlurmJobInfo(None, None, args.qibolab_platforms_path)]
+        job = SlurmJobInfo(None, None, None, args.qibolab_platforms_path)
     else:
         slurm_configuration = json.loads(args.slurm_configuration)
-        jobs = [
-            SlurmJobInfo(**job_info, qibolab_platforms_path=args.qibolab_platforms_path)
-            for job_info in slurm_configuration
-        ]
-
-    with ThreadPool(len(jobs)) as p:
-        p.map(monitor_qpu, jobs)
+        job = SlurmJobInfo(
+            **slurm_configuration, qibolab_platforms_path=args.qibolab_platforms_path
+        )
+    monitor_qpu(job)
 
 
 if __name__ == "__main__":
