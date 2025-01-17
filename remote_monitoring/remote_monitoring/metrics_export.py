@@ -77,11 +77,6 @@ def push_data_postgres(platform: str, qpu_data: QpuData, **kwargs):
 def export_metrics(
     qibocal_output_folder: Path, export_database: str = "pushgateway", **kwargs
 ):
-    # platform = yaml.safe_load((qibocal_output_folder / "runcard.yml").read_text())[
-    #     "platform"
-    # ]
-
-    print(list(qibocal_output_folder.iterdir()))
     platform = json.loads((qibocal_output_folder / "meta.json").read_text())["platform"]
     qpu_data = get_data(qibocal_output_folder)
     if export_database == "postgres":
