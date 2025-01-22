@@ -15,7 +15,7 @@ def acquire(
 ):
     """Acquire metrics from the remote cluster."""
     _, sbatch_output, sbatch_errors = ssh_client.exec_command(
-        "source .qpu_monitoring_env/bin/activate;"
+        "module load qibo;"
         "python -m qpu_monitoring --slurm_configuration "
         f"'{json.dumps(qpu_information)}' --qibolab_platforms_path {qibolab_platforms_path}"
     )
