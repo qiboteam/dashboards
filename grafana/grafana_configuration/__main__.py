@@ -298,6 +298,8 @@ def upload_datasource_to_grafana(server, api_key, auth, verify=True):
     print(r.text)
     return
 """
+import glob
+import os
 
 def main():
     parser = argparse.ArgumentParser()
@@ -310,6 +312,8 @@ def main():
         default=Path(__file__).parent / "config" / "qpu_config.json",
     )
     args = parser.parse_args()
+    files = glob.glob(os.path.join(str(args.qpu_config), "*.json")) 
+    print(files)
 
     #print(upload_datasource_to_grafana(GRAFANA_URL, grafana_key, (ADMIN_USERNAME, ADMIN_PASSWORD)))
     qpu_config = parse_config(args.qpu_config)
