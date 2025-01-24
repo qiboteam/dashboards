@@ -103,3 +103,23 @@ container needs to be restarted with the following command:
 ``` bash
 docker restart remote_monitoring
 ```
+
+## Backup of SQL data
+
+When stopping containers with `docker compose down`, all data not stored on persistent volumes
+(i.e.: bind mounts of docker volumes) are lost.
+
+If you want to save data stored in `postgres` (qpu metrics), it is possible to dump them to the host with the command
+
+``` bash
+sh db_backup.sh
+```
+
+On the next startup with `docker compose up`, it is possible to restore the database with the command
+
+``` bash
+sh db_restore.sh
+```
+
+> [!NOTE]
+> Currently the database needs to be restored as soon as the container starts (before remote_monitoring commits data).
