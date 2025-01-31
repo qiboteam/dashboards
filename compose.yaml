@@ -15,7 +15,7 @@ services:
       GF_INSTALL_PLUGINS: ${GF_INSTALL_PLUGINS}
       GF_PATHS_PROVISIONING: ${GF_PATHS_PROVISIONING:-/etc/grafana/provisioning/datasources}
     volumes:
-      - ./grafana/grafana_configuration/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/grafana_configuration/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -62,7 +62,7 @@ services:
       QPU_CONFIG_JSON_PATH: ${QPU_CONFIG_JSON_PATH:-./grafana/grafana_configuration/config/qpu_config.json}
       QPU_CONFIG_JSON_PATH_CONTAINER: /conf/qpu_config/qpu_config.json
     volumes:
-      - ${QPU_CONFIG_JSON_PATH:-./grafana/grafana_configuration/config/qpu_config.json}:/conf/qpu_config/qpu_config.json
+      - ${QPU_CONFIG_JSON_PATH:-./grafana/grafana_configuration/config/qpu_config.json}:/conf/qpu_config/qpu_config.json:ro
     networks:
       - my_network
   remote_monitoring:
