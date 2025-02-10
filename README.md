@@ -123,3 +123,84 @@ sh db_restore.sh
 
 > [!NOTE]
 > Currently the database needs to be restored as soon as the container starts (before remote_monitoring commits data).
+
+
+## Addition of Experiments
+
+### To add experiments to monitor in the dashboards the following files are modified:
+
+1. In the qpu_monitoring folder the scripts/monitoring.py file is modified. The experiment_output and experiment_name represent the name of the output and the actual name of the operation, respectively. Parameter1, parameter2, and parameter3 are the names of the parameters for the experiment with X, Y, Z being the respective assigned values. 
+
+``` python
+def main(targets: list, platform_name: str, output_folder: str):
+    with Executor.open(
+        "myexec",
+        path=output_folder,
+        platform=platform_name,
+        targets=targets,
+        update=False,
+        force=True,
+    ) as e:
+        experiment_output = e.experiment_name(
+            parameter1 = X,
+            parameter2=Y,
+            parameter3=Z,
+        )
+        check_chi2(file_output, platform=e.platform, targets=targets)
+ ``` 
+
+2. In the remote_monitoring container the remote_monitoring/database_schema.py and remote_monitoring/metrics_export.py files are altered. 
+
+In the metrics_export.py file, the output metric is specified for the particular experiment where Output_Parameter is the output parameter that will appear on the dashboard (t1, t2, frequency etc).
+
+``` python
+def get_data(qibocal_output_folder: Path) -> QpuData:
+    """Read metrics acquired by qibocal from the report."""
+    out = Output.load(qibocal_output_folder)
+    report_meta = out.meta
+    acquisition_time = report_meta.start_time
+    qpu_data = collections.defaultdict(dict)
+
+    for task_id, result in out.history.items():
+        task_id = task_id.id
+        metric = task_id
+        if task_id == "experiment_name":
+            metric = "output_parameter"
+``` 
+
+In the database_scheme.py file the mapping type of the output value is established in the class Qubit. The Output_Parameter is the output parameter that will appear on the dashboard with Type being the type of that parameter (str, float etc). 
+
+``` python
+Output_Parameter: Mapped[Type]
+``` 
+
+3. In the grafana container, the /grafana_configuration/__main__.py file is modified in the main. The Output_Metric will pass the Output_Parameter and Color which will then be used in the panels. In each MetricPanel, the Panel_Title, Output_Metric, width and height dimensions as X and Y, and Output_Unit are defined which will then appear on the panel. 
+
+``` python
+# create defined datasources
+    data_sources = json.loads(DATASOURCE_CONFIGURATION_PATH.read_text())
+    for data_source in data_sources:
+        datasources.create(data_source, http_headers=HTTP_HEADERS)
+
+    Output_Metric = [
+        Metric(name="Output_Parameter ", color="Color"),
+    ]
+    metric_panels = [
+        MetricPanel(
+            title="Panel_Title ",
+            metrics=Output_Metric,
+            width=X,
+            height=Y,
+            unit="Output_Unit",
+        ),
+    ]
+```
+
+Further panels can be added by including more Output_Metric values and inserting them in the MetricPanel. Although, this is dependent on the changes in the respective files. Adding multiple output parameters in a single panel requires modification of Output_Metric to include an instance of the additional metric and Output_Parameter2. 
+
+``` python
+Output_Metric = [
+        Metric(name="Output_Parameter ", color="Color"),
+        Metric(name="Output_Parameter2 ", color="Color"),
+    ]
+```
