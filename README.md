@@ -168,7 +168,7 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
             metric = "output_parameter"
 ``` 
 
-In the database_scheme.py file the mapping type of the output value is established in the class Qubit. The Output_Parameter is the output parameter that will appear on the dashboard with Type being the type of that parameter (str, float etc). 
+In the database_schema.py file the mapping type of the output value is established in the class Qubit. The Output_Parameter is the output parameter that will appear on the dashboard with Type being the type of that parameter (str, float etc). 
 
 ``` python
 Output_Parameter: Mapped[Type]
