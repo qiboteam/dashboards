@@ -13,6 +13,13 @@ from sqlalchemy.orm import Session
 
 from .database_schema import Base, Qubit
 
+METRICS = {
+    "t1": "t1",
+    "ramsey": "t2",
+    "readout_characterization": "assignment_fidelity",
+}
+"""Pair qibocal experiments with metrics to be displayed in grafana."""
+
 
 @dataclass
 class QpuData:
@@ -33,11 +40,12 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
 
     for task_id, result in out.history.items():
         task_id = task_id.id
-        metric = task_id
-        if task_id == "readout_characterization":
-            metric = "assignment_fidelity"
-        if task_id == "ramsey":
-            metric = "t2"
+        # metric = task_id
+        # if task_id == "readout_characterization":
+        #     metric = "assignment_fidelity"
+        # if task_id == "ramsey":
+        #     metric = "t2"
+        metric = METRICS[task_id]
 
         metric_values = getattr(result.results, metric)
         for qubit_id, qubit_metric in metric_values.items():
