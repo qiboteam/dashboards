@@ -12,13 +12,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from .database_schema import Base, Qubit
-
-METRICS = {
-    "t1": "t1",
-    "ramsey": "t2",
-    "readout_characterization": "assignment_fidelity",
-}
-"""Pair qibocal experiments with metrics to be displayed in grafana."""
+from .experiments import METRICS
 
 
 @dataclass
