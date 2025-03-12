@@ -63,7 +63,9 @@ class Dashboard(glc.Dashboard):
         dashboard = cls(title=dashboard_configuration["title"])
         if "rows" in dashboard_configuration:
             for row in dashboard_configuration["rows"]:
-                dashboard_row = Row(row["title"], GridPos(**row["grid_pos"]))
+                dashboard_row = Row(
+                    row["title"], x=row["grid_pos"]["x"], y=row["grid_pos"]["y"]
+                )
                 if "panels" in row:
                     for panel in row["panels"]:
                         panel_class = class_lookup[panel["type"]]
