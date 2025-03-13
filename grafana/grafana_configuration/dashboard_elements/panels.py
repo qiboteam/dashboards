@@ -28,12 +28,20 @@ class TimeSeries(glc.TimeSeries):
     def x(self):
         return self.gridPos["x"]
 
+    @x.setter
+    def x(self, value: int):
+        self.gridPos["x"] = value
+
     @property
     def y(self):
         return self.gridPos["y"]
 
+    @y.setter
+    def y(self, value: int):
+        self.gridPos["y"] = value
+
     @property
-    def right_x(self):
+    def right_x(self) -> int:
         return self.x + self.gridPos["w"]
 
     @property
@@ -88,12 +96,20 @@ class Stat(glc.Stat):
     def x(self):
         return self.gridPos["x"]
 
+    @x.setter
+    def x(self, value: int):
+        self.gridPos["x"] = value
+
     @property
     def y(self):
         return self.gridPos["y"]
 
+    @y.setter
+    def y(self, value: int):
+        self.gridPos["y"] = value
+
     @property
-    def right_x(self):
+    def right_x(self) -> int:
         return self.x + self.gridPos["w"]
 
     @property
