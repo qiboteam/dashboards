@@ -24,12 +24,8 @@ class Row:
     """List of grafana panels contained in the row."""
 
     @property
-    def right_x(self):
-        return self.x + self.width
-
-    @property
     def lowest_point(self) -> int:
-        return self.y + self.height
+        return max([self.y + self.height] + [p.lowest_point for p in self.panels])
 
     def add(self, panel):
         """Add panel to the row."""
