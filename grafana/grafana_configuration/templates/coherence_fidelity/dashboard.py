@@ -34,7 +34,7 @@ class CoherenceFidelityDashboard(Dashboard):
         timeseries_panel_size = {"width": 5, "height": 6}
 
         coherence_row = Row(title="Coherence times", x=0, y=0)
-        start_group_pos = below(coherence_row)
+        previous = coherence_row
         for qubit in self.qubits:
             coherence_metrics = [
                 Metric(name="t1", color="red", qpu_name=self.title, qubit_id=qubit),
@@ -42,7 +42,6 @@ class CoherenceFidelityDashboard(Dashboard):
             ]
             stat_panel = Stat(
                 unit="ns",
-                **start_group_pos,
                 **stat_panel_size,
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in coherence_metrics],
@@ -53,13 +52,13 @@ class CoherenceFidelityDashboard(Dashboard):
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in coherence_metrics],
             ).below(stat_panel)
-            group = Group([stat_panel, timeseries_panel], **start_group_pos)
-            start_group_pos = right_of(group)
+            group = Group([stat_panel, timeseries_panel]).right_of(previous)
+            previous = group
             coherence_row.add_group(group)
         self.add_row(coherence_row)
 
         fidelity_row = Row(title="Fidelities", **below(coherence_row))
-        start_group_pos = below(fidelity_row)
+        previous = fidelity_row
         for qubit in self.qubits:
             fidelity_metrics = [
                 Metric(
@@ -71,7 +70,6 @@ class CoherenceFidelityDashboard(Dashboard):
             ]
             stat_panel = Stat(
                 unit="percentunit",
-                **start_group_pos,
                 **stat_panel_size,
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in fidelity_metrics],
@@ -82,8 +80,8 @@ class CoherenceFidelityDashboard(Dashboard):
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in fidelity_metrics],
             ).below(stat_panel)
-            group = Group([stat_panel, timeseries_panel], **start_group_pos)
-            start_group_pos = right_of(group)
+            group = Group([stat_panel, timeseries_panel]).right_of(previous)
+            previous = group
             fidelity_row.add_group(group)
         self.add_row(fidelity_row)
 
