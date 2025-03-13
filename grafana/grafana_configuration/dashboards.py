@@ -5,7 +5,6 @@ import requests
 from grafana_configuration.dashboard_elements.panels import Stat, TimeSeries
 from grafana_configuration.dashboard_elements.row import Row
 from grafana_configuration.dashboard_elements.targets import Target
-from grafana_configuration.dashboard_elements.utils import GridPos
 from grafanalib._gen import DashboardEncoder
 
 from .utils import GRAFANA_URL

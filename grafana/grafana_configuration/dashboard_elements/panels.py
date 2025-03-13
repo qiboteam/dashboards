@@ -1,15 +1,10 @@
-from typing import Optional, Union
+from typing import Union
 
 import grafanalib.core as glc
-
-from .utils import GridPos
 
 
 class TimeSeries(glc.TimeSeries):
     """Wrapper class of `grafanalib.core.TimeSeries`."""
-
-    grid_pos: Optional[GridPos]
-    """Position of the panel. Must be set before generating the json dictionary."""
 
     def __init__(
         self,
