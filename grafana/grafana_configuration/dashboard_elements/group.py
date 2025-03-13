@@ -8,14 +8,8 @@ from .panels import OverriddenPanel
 @dataclass
 class Group:
     panels: list[OverriddenPanel] = field(default_factory=list)
-
-    @property
-    def x(self):
-        return self.panels[0].x if self.panels else 0
-
-    @property
-    def y(self):
-        return self.panels[0].y if self.panels else 0
+    x: int = 0
+    y: int = 0
 
     @property
     def right_x(self):
