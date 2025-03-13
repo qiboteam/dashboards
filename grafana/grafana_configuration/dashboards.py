@@ -85,18 +85,14 @@ class Dashboard(glc.Dashboard):
                 dashboard.add_row(dashboard_row)
         return dashboard
 
+    def create(self, http_headers: dict[str, str]):
+        """Create a new dashboard and push it to Grafana.
 
-def create(dashboard_configuration: dict, http_headers: dict[str, str]):
-    """Create a new dashboard.
-
-    Args:
-        dashboard_configuration (dict): parameters of the new dashboard
-            that are set and then exported to grafana.
-        http_headers (dict[str, str]): http headers for the request containing the API key.
-    """
-    dashboard = Dashboard.from_json_configuration(dashboard_configuration)
-    requests.post(
-        f"{GRAFANA_URL}/dashboards/db",
-        data=dashboard.to_json,
-        headers=http_headers,
-    )
+        Args:
+            http_headers (dict[str, str]): http headers for the request containing the API key.
+        """
+        requests.post(
+            f"{GRAFANA_URL}/dashboards/db",
+            data=self.to_json,
+            headers=http_headers,
+        )

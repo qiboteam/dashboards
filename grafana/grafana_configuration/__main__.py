@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 import jinja2
-from grafana_configuration import dashboards, datasources
+from grafana_configuration import datasources
+from grafana_configuration.dashboards import Dashboard
 
 from .api_key import grafana_key
 from .users import change_admin_password, create_users
@@ -83,8 +84,9 @@ def main():
             metric_panels=metric_panels,
         )
         dashboards_configurations = json.loads(json_string)
-        for dash in dashboards_configurations:
-            dashboards.create(dash, http_headers=HTTP_HEADERS)
+        for dash_conf in dashboards_configurations:
+            dash = Dashboard.from_json_configuration(dash_conf)
+            dash.create(http_headers=HTTP_HEADERS)
 
     if args.users is not None:
         user_configurations = json.loads(args.users)
