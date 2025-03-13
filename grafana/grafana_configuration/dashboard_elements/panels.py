@@ -14,12 +14,20 @@ class TimeSeries(glc.TimeSeries):
     def __init__(
         self,
         *args,
+        x: int = 0,
+        y: int = 0,
+        width: int = 0,
+        height: int = 0,
         lineInterpolation: str = "smooth",
-        grid_pos: GridPos = None,
         **kwargs
     ):
         super().__init__(*args, lineInterpolation=lineInterpolation, **kwargs)
-        self.grid_pos = grid_pos
+        self.gridPos = {
+            "x": x,
+            "y": y,
+            "w": width,
+            "h": height,
+        }
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
@@ -32,8 +40,11 @@ class Stat(glc.Stat):
     def __init__(
         self,
         *args,
+        x: int = 0,
+        y: int = 0,
+        width: int = 0,
+        height: int = 0,
         unit: str = "",
-        grid_pos: GridPos = None,
         colorMode: str = "background",
         reduceCalc: str = "last",
         **kwargs
@@ -55,7 +66,12 @@ class Stat(glc.Stat):
         super().__init__(
             *args, format=unit, colorMode=colorMode, reduceCalc=reduceCalc, **kwargs
         )
-        self.grid_pos = grid_pos
+        self.gridPos = {
+            "x": x,
+            "y": y,
+            "w": width,
+            "h": height,
+        }
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
@@ -73,9 +89,5 @@ def set_panel_position(panel: OverriddenPanel):
     """
     # set customized colors and styles in the panel
     panel.overrides = [target.override() for target in panel.targets]
-
     panel_dictionary = super(type(panel), panel).to_json_data()
-    if panel.grid_pos is None:
-        raise ValueError("Panel grid position must be set.")
-    panel_dictionary["gridPos"] = panel.grid_pos.__dict__
     return panel_dictionary

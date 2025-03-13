@@ -69,14 +69,19 @@ class Dashboard(glc.Dashboard):
                 if "panels" in row:
                     for panel in row["panels"]:
                         panel_class = class_lookup[panel["type"]]
-                        grid_pos = GridPos(**panel["value"]["grid_pos"])
-                        panel["value"]["grid_pos"] = grid_pos
+                        x = panel["value"]["grid_pos"]["x"]
+                        y = panel["value"]["grid_pos"]["y"]
+                        width = panel["value"]["grid_pos"]["w"]
+                        height = panel["value"]["grid_pos"]["h"]
+                        del panel["value"]["grid_pos"]
                         dashboard_targets = []
                         for target in panel["value"]["targets"]:
                             target_class = class_lookup[target["type"]]
                             dashboard_targets.append(target_class(**target["value"]))
                         panel["value"]["targets"] = dashboard_targets
-                        dashboard_panel = panel_class(**panel["value"])
+                        dashboard_panel = panel_class(
+                            **panel["value"], x=x, y=y, width=width, height=height
+                        )
                         dashboard_row.add(dashboard_panel)
                 dashboard.add_row(dashboard_row)
         return dashboard
