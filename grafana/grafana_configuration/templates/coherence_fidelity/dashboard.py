@@ -47,14 +47,12 @@ class CoherenceFidelityDashboard(Dashboard):
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in coherence_metrics],
             )
-            start_group_pos = below(stat_panel)
             timeseries_panel = TimeSeries(
                 unit="ns",
-                **below(stat_panel),
                 **timeseries_panel_size,
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in coherence_metrics],
-            )
+            ).below(stat_panel)
             group = Group([stat_panel, timeseries_panel])
             start_group_pos = right_of(group)
             coherence_row.add_group(group)
@@ -78,14 +76,12 @@ class CoherenceFidelityDashboard(Dashboard):
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in fidelity_metrics],
             )
-            start_group_pos = below(stat_panel)
             timeseries_panel = TimeSeries(
                 unit="percentunit",
-                **below(stat_panel),
                 **timeseries_panel_size,
                 title=f"Qubit {qubit}",
                 targets=[p.to_target() for p in fidelity_metrics],
-            )
+            ).below(stat_panel)
             group = Group([stat_panel, timeseries_panel])
             start_group_pos = right_of(group)
             fidelity_row.add_group(group)

@@ -1,6 +1,27 @@
+from __future__ import annotations
+
 from typing import Union
 
 import grafanalib.core as glc
+
+from .utils import DEFAULT_WIDTH
+
+
+def move_right_of(dashboard_element: OverriddenPanel, other: OverriddenPanel):
+    new_x = other.right_x
+    new_y = other.y
+    if new_x + dashboard_element.right_x > DEFAULT_WIDTH:
+        new_x = 0
+        new_y = other.lowest_point
+    dashboard_element.x = new_x
+    dashboard_element.y = new_y
+    return dashboard_element
+
+
+def move_below(dashboard_element: OverriddenPanel, other: OverriddenPanel):
+    dashboard_element.x = other.x
+    dashboard_element.y = other.lowest_point
+    return dashboard_element
 
 
 class TimeSeries(glc.TimeSeries):
@@ -14,7 +35,7 @@ class TimeSeries(glc.TimeSeries):
         width: int = 0,
         height: int = 0,
         lineInterpolation: str = "smooth",
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*args, lineInterpolation=lineInterpolation, **kwargs)
         self.gridPos = {
@@ -48,6 +69,12 @@ class TimeSeries(glc.TimeSeries):
     def lowest_point(self) -> int:
         return self.y + self.gridPos["h"]
 
+    def below(self, other: OverriddenPanel) -> TimeSeries:
+        return move_below(self, other)
+
+    def right_of(self, other: OverriddenPanel) -> TimeSeries:
+        return move_right_of(self, other)
+
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
         return build_panel(self)
@@ -66,7 +93,7 @@ class Stat(glc.Stat):
         unit: str = "",
         colorMode: str = "background",
         reduceCalc: str = "last",
-        **kwargs
+        **kwargs,
     ):
         """Initialize object.
 
@@ -115,6 +142,12 @@ class Stat(glc.Stat):
     @property
     def lowest_point(self) -> int:
         return self.y + self.gridPos["h"]
+
+    def below(self, other: OverriddenPanel) -> Stat:
+        return move_below(self, other)
+
+    def right_of(self, other: OverriddenPanel) -> Stat:
+        return move_right_of(self, other)
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
