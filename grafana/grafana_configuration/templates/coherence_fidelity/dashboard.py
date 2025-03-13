@@ -8,6 +8,8 @@ from grafana_configuration.dashboard_elements.panels import Stat, TimeSeries
 from grafana_configuration.dashboard_elements.row import Row
 from grafana_configuration.dashboards import Dashboard
 
+from .group import CoherenceFidelityGroup
+
 
 class CoherenceFidelityDashboard(Dashboard):
     def __init__(
@@ -30,9 +32,6 @@ class CoherenceFidelityDashboard(Dashboard):
             qubits = []
         self.qubits = qubits
 
-        stat_panel_size = {"width": 5, "height": 2}
-        timeseries_panel_size = {"width": 5, "height": 6}
-
         coherence_row = Row(title="Coherence times")
         previous = coherence_row
         for qubit in self.qubits:
@@ -40,19 +39,10 @@ class CoherenceFidelityDashboard(Dashboard):
                 Metric(name="t1", color="red", qpu_name=self.title, qubit_id=qubit),
                 Metric(name="t2", color="blue", qpu_name=self.title, qubit_id=qubit),
             ]
-            stat_panel = Stat(
-                unit="ns",
-                **stat_panel_size,
+            group = CoherenceFidelityGroup(
+                metrics=coherence_metrics,
                 title=f"Qubit {qubit}",
-                targets=[p.to_target() for p in coherence_metrics],
-            )
-            timeseries_panel = TimeSeries(
-                unit="ns",
-                **timeseries_panel_size,
-                title=f"Qubit {qubit}",
-                targets=[p.to_target() for p in coherence_metrics],
-            ).below(stat_panel)
-            group = Group([stat_panel, timeseries_panel]).right_of(previous)
+            ).right_of(previous)
             previous = group
             coherence_row.add_group(group)
         self.add_row(coherence_row)
@@ -68,19 +58,10 @@ class CoherenceFidelityDashboard(Dashboard):
                     qubit_id=qubit,
                 ),
             ]
-            stat_panel = Stat(
-                unit="percentunit",
-                **stat_panel_size,
+            group = CoherenceFidelityGroup(
+                metrics=fidelity_metrics,
                 title=f"Qubit {qubit}",
-                targets=[p.to_target() for p in fidelity_metrics],
-            )
-            timeseries_panel = TimeSeries(
-                unit="percentunit",
-                **timeseries_panel_size,
-                title=f"Qubit {qubit}",
-                targets=[p.to_target() for p in fidelity_metrics],
-            ).below(stat_panel)
-            group = Group([stat_panel, timeseries_panel]).right_of(previous)
+            ).right_of(previous)
             previous = group
             fidelity_row.add_group(group)
         self.add_row(fidelity_row)
