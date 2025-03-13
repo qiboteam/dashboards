@@ -30,6 +30,10 @@ class Row:
     def lowest_point(self) -> int:
         return max([self.y + self.height] + [p.lowest_point for p in self.panels])
 
+    @property
+    def right_x(self) -> int:
+        return max([self.x + self.width] + [p.right_x for p in self.panels])
+
     def add(self, panel):
         """Add panel to the row."""
         self.panels.append(panel)
