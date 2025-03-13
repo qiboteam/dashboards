@@ -17,8 +17,8 @@ class Row:
 
     title: str
     """Name of the row displayed in grafana."""
-    x: int
-    y: int
+    x: int = 0
+    y: int = 0
     width: int = DEFAULT_WIDTH
     height: int = DEFAULT_HEIGHT
     panels: list[glc.Panel] = field(default_factory=list)
