@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 import grafanalib.core as glc
 
+from .group import Group
 from .utils import DEFAULT_HEIGHT, DEFAULT_WIDTH
 
 
@@ -30,6 +31,11 @@ class Row:
     def add(self, panel):
         """Add panel to the row."""
         self.panels.append(panel)
+
+    def add_group(self, group: Group):
+        """Add all panels of the group to the row."""
+        for p in group.panels:
+            self.add(p)
 
     def to_json_data(self) -> dict:
         """Convert the row into a dictionary for grafana."""
