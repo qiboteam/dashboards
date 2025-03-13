@@ -33,7 +33,7 @@ class CoherenceFidelityDashboard(Dashboard):
         stat_panel_size = {"width": 5, "height": 2}
         timeseries_panel_size = {"width": 5, "height": 6}
 
-        coherence_row = Row(title="Coherence times", x=0, y=0)
+        coherence_row = Row(title="Coherence times")
         previous = coherence_row
         for qubit in self.qubits:
             coherence_metrics = [
@@ -57,7 +57,7 @@ class CoherenceFidelityDashboard(Dashboard):
             coherence_row.add_group(group)
         self.add_row(coherence_row)
 
-        fidelity_row = Row(title="Fidelities", **below(coherence_row))
+        fidelity_row = Row(title="Fidelities").below(coherence_row)
         previous = fidelity_row
         for qubit in self.qubits:
             fidelity_metrics = [

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 import grafanalib.core as glc
@@ -36,6 +38,17 @@ class Row:
         """Add all panels of the group to the row."""
         for p in group.panels:
             self.add(p)
+
+    def below(self, other: Row) -> Row:
+        """Place a new row below the other object."""
+        shifted_group = self
+        new_x = other.x
+        new_y = other.lowest_point
+        shifted_group.x = new_x
+        shifted_group.y = new_y
+        for i, _ in enumerate(shifted_group.panels):
+            shifted_group.panels[i].y += new_y
+        return shifted_group
 
     def to_json_data(self) -> dict:
         """Convert the row into a dictionary for grafana."""
