@@ -30,7 +30,7 @@ class Row:
     def to_json_data(self) -> dict:
         """Convert the row into a dictionary for grafana."""
         return {
-            "grid_pos": {
+            "gridPos": {
                 "x": self.x,
                 "y": self.y,
                 "w": self.width,
