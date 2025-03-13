@@ -24,6 +24,22 @@ class TimeSeries(glc.TimeSeries):
             "h": height,
         }
 
+    @property
+    def x(self):
+        return self.gridPos["x"]
+
+    @property
+    def y(self):
+        return self.gridPos["y"]
+
+    @property
+    def right_x(self):
+        return self.x + self.gridPos["w"]
+
+    @property
+    def lowest_point(self) -> int:
+        return self.y + self.gridPos["h"]
+
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
         return build_panel(self)
@@ -67,6 +83,22 @@ class Stat(glc.Stat):
             "w": width,
             "h": height,
         }
+
+    @property
+    def x(self):
+        return self.gridPos["x"]
+
+    @property
+    def y(self):
+        return self.gridPos["y"]
+
+    @property
+    def right_x(self):
+        return self.x + self.gridPos["w"]
+
+    @property
+    def lowest_point(self) -> int:
+        return self.y + self.gridPos["h"]
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""

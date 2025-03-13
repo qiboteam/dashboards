@@ -23,6 +23,14 @@ class Row:
     panels: list[glc.Panel] = field(default_factory=list)
     """List of grafana panels contained in the row."""
 
+    @property
+    def right_x(self):
+        return self.x + self.width
+
+    @property
+    def lowest_point(self) -> int:
+        return self.y + self.height
+
     def add(self, panel):
         """Add panel to the row."""
         self.panels.append(panel)
