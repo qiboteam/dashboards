@@ -31,7 +31,7 @@ class TimeSeries(glc.TimeSeries):
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
-        return set_panel_position(self)
+        return build_panel(self)
 
 
 class Stat(glc.Stat):
@@ -75,18 +75,14 @@ class Stat(glc.Stat):
 
     def to_json_data(self):
         """Wrapper of `grafanalib.core.TimeSeries.to_json_data`."""
-        return set_panel_position(self)
+        return build_panel(self)
 
 
 OverriddenPanel = Union[Stat, TimeSeries]
 
 
-def set_panel_position(panel: OverriddenPanel):
-    """Add panel grid position to the json dictionary of the panel.
-
-    Panel position must be set, otherwise grafana throws a generic error.
-    If the panel position is not set, raise an error.
-    """
+def build_panel(panel: OverriddenPanel):
+    """Build panel json and override targets."""
     # set customized colors and styles in the panel
     panel.overrides = [target.override() for target in panel.targets]
     panel_dictionary = super(type(panel), panel).to_json_data()
