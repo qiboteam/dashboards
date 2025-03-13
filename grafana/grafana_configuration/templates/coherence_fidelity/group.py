@@ -12,10 +12,11 @@ TIMESERIES_PANEL_SIZE = {"width": 5, "height": 6}
 class CoherenceFidelityGroup(Group):
     metrics: list[Metric] = field(default_factory=list)
     title: str = ""
+    unit: str = ""
 
     def __post_init__(self):
         stat_panel = Stat(
-            unit="ns",
+            unit=self.unit,
             x=self.x,
             y=self.y,
             **STAT_PANEL_SIZE,
@@ -23,7 +24,7 @@ class CoherenceFidelityGroup(Group):
             targets=[p.to_target() for p in self.metrics],
         )
         timeseries_panel = TimeSeries(
-            unit="ns",
+            unit=self.unit,
             **TIMESERIES_PANEL_SIZE,
             title=self.title,
             targets=[p.to_target() for p in self.metrics],
