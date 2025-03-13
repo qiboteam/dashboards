@@ -26,7 +26,6 @@ class CoherenceFidelityGroup(Group):
         timeseries_panel = TimeSeries(
             unit=self.unit,
             **TIMESERIES_PANEL_SIZE,
-            title=self.title,
             targets=[p.to_target() for p in self.metrics],
         ).below(stat_panel)
         self.panels.extend([stat_panel, timeseries_panel])
