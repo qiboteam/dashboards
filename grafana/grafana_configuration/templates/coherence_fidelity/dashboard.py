@@ -71,14 +71,3 @@ class CoherenceFidelityDashboard(Dashboard):
     @classmethod
     def from_qpu_config(cls, config: dict):
         return cls(title=config["name"], qubits=config["qubits"])
-
-
-def right_of(dashboard_element):
-    new_x = dashboard_element.right_x
-    if new_x + 5 > 24:  # ???
-        return {"x": 0, "y": dashboard_element.lowest_point}  # ???
-    return {"x": new_x, "y": dashboard_element.y}
-
-
-def below(dashboard_element):
-    return {"x": dashboard_element.x, "y": dashboard_element.lowest_point}
