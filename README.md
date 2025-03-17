@@ -168,33 +168,80 @@ In the database_schema.py file the mapping type of the output value is establish
 Output_Parameter: Mapped[Type]
 ```
 
-3. In the grafana container, the /grafana_configuration/__main__.py file is modified in the main. The Output_Metric will pass the Output_Parameter and Color which will then be used in the panels. In each MetricPanel, the Panel_Title, Output_Metric, width and height dimensions as X and Y, and Output_Unit are defined which will then appear on the panel.
+3. In the grafana container, `/grafana_configuration/__main__.py`uses pre-build templates based on python classes defined in `/grafana_configuration/templates/`.
+Panels are gouped into group blocks, that can be placed next to other blocks.
+Currently, the coherence-fidelity dashboard is used.
+
+Here us an example on how to add a new row (below the row with assignment fidelities) in the coherence-fidelity dashboard with a new metric:
 
 ``` python
-# create defined datasources
-    data_sources = json.loads(DATASOURCE_CONFIGURATION_PATH.read_text())
-    for data_source in data_sources:
-        datasources.create(data_source, http_headers=HTTP_HEADERS)
-
-    Output_Metric = [
-        Metric(name="Output_Parameter ", color="Color"),
-    ]
-    metric_panels = [
-        MetricPanel(
-            title="Panel_Title ",
-            metrics=Output_Metric,
-            width=X,
-            height=Y,
-            unit="Output_Unit",
-        ),
-    ]
+class CoherenceFidelityDashboard(Dashboard):
+    def __init__(
+        self,
+        *args,
+        title: str = "",
+        qubits: Optional[list] = None,
+        timezone: str = "browser",
+        **kwargs,
+    ):
+    ...
+        new_row = Row(title="Fidelities").below(fidelity_row)
+        previous = new_row
+        for qubit in self.qubits:
+            fidelity_metrics = [
+                Metric(
+                    name="Output_Parameter",
+                    color="Color",
+                    qpu_name=self.title,
+                    qubit_id=qubit,
+                ),
+            ]
+            group = CoherenceFidelityGroup(
+                metrics=fidelity_metrics,
+                title="Panel_Title",
+                unit="Output_Unit",
+            ).right_of(previous)
+            previous = group
+            new_row.add_group(group)
+        self.add_row(new_row)
 ```
 
-Further panels can be added by including more Output_Metric values and inserting them in the MetricPanel. Although, this is dependent on the changes in the respective files. Adding multiple output parameters in a single panel requires modification of Output_Metric to include an instance of the additional metric and Output_Parameter2.
+Furthermore, other metrics can be added to existing groups, e.g.:
 
 ``` python
-Output_Metric = [
-        Metric(name="Output_Parameter ", color="Color"),
-        Metric(name="Output_Parameter2 ", color="Color"),
-    ]
+class CoherenceFidelityDashboard(Dashboard):
+    def __init__(
+        self,
+        *args,
+        title: str = "",
+        qubits: Optional[list] = None,
+        timezone: str = "browser",
+        **kwargs,
+    ):
+    ...
+        fidelity_row = Row(title="Fidelities").below(coherence_row)
+        previous = fidelity_row
+        for qubit in self.qubits:
+            fidelity_metrics = [
+                Metric(
+                    name="assignment_fidelity",
+                    color="green",
+                    qpu_name=self.title,
+                    qubit_id=qubit,
+                ),
+                Metric(
+                    name="Output_Parameter",
+                    color="Color",
+                    qpu_name=self.title,
+                    qubit_id=qubit,
+                ),
+            ]
+            group = CoherenceFidelityGroup(
+                metrics=fidelity_metrics,
+                title=f"Qubit {qubit}",
+                unit="percentunit",
+            ).right_of(previous)
+            previous = group
+            fidelity_row.add_group(group)
+        self.add_row(fidelity_row)
 ```
