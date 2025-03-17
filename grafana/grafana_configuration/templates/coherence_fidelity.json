@@ -8,7 +8,7 @@
             {% for panel in metric_panels %}
             {
                 "title": "{{ panel.title }}",
-                "grid_pos": { "x": 0, "y": {{ ns.y_position }} },
+                "grid_pos": {"x":0, "y": {{ 20 + panelloop.index * (panel.height + 1) }}},
                 "panels": [
                     {% for qubit_id in qubits %}
                     {% set qubitloop = loop %}
@@ -29,7 +29,7 @@
                                     "type": "Target",
                                     "value": {
                                         "datasource": "postgres",
-                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='{{ qpu_name }}' AND qubit_id='{{ qubit_id }}'",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name=\"{{ qpu_name }}\" AND qubit_id={{ qubit_id }}",
                                         "legendFormat": "{{ metric.name }}",
                                         "color": "{{ metric.color }}",
                                         "sql": {
@@ -73,13 +73,8 @@
                     {
                         "type": "TimeSeries",
                         "value": {
-                            "title": "",
-                            "grid_pos": {
-                                "x": {{ (qubitloop.index % panels_per_row) * panel.width }},
-                                "y": {{ ns.y_position + 1 + (qubitloop.index // panels_per_row) * (panel_height_small + panel.height) + panel_height_small }},
-                                "w": {{ panel.width }},
-                                "h": {{ panel.height }}
-                            },
+                            "title": "Qubit {{ qubit_id }}",
+                            "grid_pos": {"x": {{ qubit_id * panel.width }}, "y": {{ 21 + panelloop.index * (panel.height + 1) }}, "w": {{ panel.width }}, "h": 2},
                             "unit": "{{ panel.unit }}",
                             "targets": [
                                 {% for metric in panel.metrics %}
@@ -87,7 +82,7 @@
                                     "type": "Target",
                                     "value": {
                                         "datasource": "postgres",
-                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name='{{ qpu_name }}' AND qubit_id='{{ qubit_id }}'",
+                                        "rawSql": "SELECT {{ metric.name }}, acquisition_time FROM qubit WHERE qpu_name=\"{{ qpu_name }}\" AND qubit_id={{ qubit_id }}",
                                         "legendFormat": "{{ metric.name }}",
                                         "color": "{{ metric.color }}",
                                         "sql": {
@@ -131,7 +126,7 @@
                     {% endfor %}
                 ]
             }
-            {% set ns.y_position = ns.y_position +  1 + (qubits|length // panels_per_row) * (panel_height_small + panel.height) + (panel_height_small + panel.height) %}
+            {% set ns.y_position = ns.y_position +  1 + (qubits // panels_per_row) * (panel_height_small + panel.height) + (panel_height_small + panel.height) %}
             {% if not loop.last %},{% endif %}
             {% endfor %}
         ]
