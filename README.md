@@ -10,6 +10,11 @@ docker compose up
 **_NOTE:_**  Docker should be used as a non-root user:
 https://docs.docker.com/engine/install/linux-postinstall/
 
+An update in the docker container requires 
+``` bash
+docker compose up --build
+```
+
 ## Containers
 
 Currently the following containers are created:
@@ -129,7 +134,7 @@ sh db_restore.sh
 
 ### To add experiments to monitor in the dashboards the following files are modified:
 
-1. In the qpu_monitoring folder the scripts/monitoring.py file is modified. The experiment_output and experiment_name represent the name of the output and the actual name of the operation, respectively. Parameter1, parameter2, and parameter3 are the names of the parameters for the experiment with X, Y, Z being the respective assigned values.
+1. The `qpu_monitoring/scripts/monitoring.py` file is modified. The experiment_output and experiment_name represent the name of the output and the actual name of the operation, respectively. Parameter1, parameter2, and parameter3 are the names of the parameters for the experiment with X, Y, Z being the respective assigned values.
 
 ``` python
 def main(targets: list, platform_name: str, output_folder: str):
@@ -149,7 +154,7 @@ def main(targets: list, platform_name: str, output_folder: str):
         check_chi2(file_output, platform=e.platform, targets=targets)
  ```
 
-2. In the remote_monitoring container the remote_monitoring/database_schema.py and remote_monitoring/metrics_export.py files are altered.
+2. In the `remote_monitoring` container the `remote_monitoring/database_schema.py` and `remote_monitoring/metrics_export.py` files are altered.
 
 In the `experiments.py` file, the output metric for each supported experiment is specified. New metrics can be added, as explained in the following example:
 
