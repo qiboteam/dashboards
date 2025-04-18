@@ -12,6 +12,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from .database_schema import Base, Qubit
+from .experiments import METRICS
 
 
 @dataclass
@@ -33,15 +34,11 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
 
     for task_id, result in out.history.items():
         task_id = task_id.id
-        metric = task_id
-        if task_id == "readout_characterization":
-            metric = "assignment_fidelity"
-        if task_id == "ramsey":
-            metric = "t2"
+        metric = METRICS[task_id]
 
         metric_values = getattr(result.results, metric)
         for qubit_id, qubit_metric in metric_values.items():
-            if metric != "assignment_fidelity":
+            if isinstance(qubit_metric, list):
                 qubit_metric = qubit_metric[0]
             qpu_data[qubit_id][metric] = qubit_metric
     return QpuData(qpu_data, acquisition_time)
