@@ -8,7 +8,7 @@ from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
 
-TEMPLATES = Path(__file__).parents[1] / "scripts"
+TEMPLATES = Path(__file__).parent / "scripts"
 RUNCARD = Path(__file__).parents[1] / "runcards" / "monitor.yml"
 REPORTS = Path.home() / "monitoring_reports"
 SLURM_JOBS = Path.home() / "monitoring_jobs"
