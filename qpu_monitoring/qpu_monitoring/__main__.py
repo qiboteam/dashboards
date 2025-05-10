@@ -68,7 +68,7 @@ def generate_monitoring_script(
         targets=" ".join(job_info.targets),
         report_path=report_save_path,
         qibolab_platforms_path=job_info.qibolab_platforms_path,
-        monitoring_script_path=Path(__file__).parents[1] / "scripts" / "monitoring.py",
+        monitoring_script_path=Path(__file__).parent / "scripts" / "monitoring.py",
     )
     monitoring_script_path.parent.mkdir(parents=True, exist_ok=True)
     monitoring_script_path.write_text(monitoring_script)
