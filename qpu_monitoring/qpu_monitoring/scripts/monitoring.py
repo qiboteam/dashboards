@@ -7,9 +7,9 @@ from qibocal.auto.execute import Executor
 from qibocal.auto.history import History
 from qibocal.auto.output import Metadata, Output
 from qibocal.auto.task import Completed
+from qibocal.calibration.calibration import QubitId
 from qibocal.cli.report import report
-from qibolab.platform import Platform
-from qibolab.qubits import QubitId
+from qibolab import Platform
 
 MAX_CHI2 = 5
 """Maximum chi2 to allow platform update."""
