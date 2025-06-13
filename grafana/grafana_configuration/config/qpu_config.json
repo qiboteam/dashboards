@@ -2,8 +2,8 @@
     "qpus":
     [
         {
-            "name": "dummy",
-            "qubits": [0, 1, 2, 3, 4]
+            "name": "qw5q_platinum",
+            "qubits": [0,1,2,3,4]
         }
     ]
 }
