@@ -8,8 +8,9 @@ from qibocal.auto.history import History
 from qibocal.auto.output import Metadata, Output
 from qibocal.auto.task import Completed
 from qibocal.cli.report import report
-from qibolab.platform import Platform
-from qibolab.qubits import QubitId
+from qibolab import Platform
+import qibolab
+from qibocal.calibration.calibration import QubitId
 
 MAX_CHI2 = 5
 """Maximum chi2 to allow platform update."""
@@ -60,24 +61,30 @@ def main(targets: list, platform_name: str, output_folder: str):
         t1_output = e.t1(
             delay_before_readout_start=10,
             delay_before_readout_end=100000,
-            delay_before_readout_step=500,
-            nshots=1024,
+            delay_before_readout_step=1_000,
+            relaxation_time= 200_000,
+            nshots=300,
         )
         check_chi2(t1_output, platform=e.platform, targets=targets)
 
-        ramsey_output = e.ramsey(
-            detuning=None,
-            delay_between_pulses_start=10,
-            delay_between_pulses_end=100000,
-            delay_between_pulses_step=500,
-            nshots=1024,
-        )
-        check_chi2(ramsey_output, platform=e.platform, targets=targets)
+        ro_char_output = e.single_shot_classification(nshots=10_000, relaxation_time=200_000)
 
-        ro_char_output = e.readout_characterization(nshots=5000, delay=1000)
         check_chi2(ro_char_output, platform=e.platform, targets=targets)
 
+        for target in targets:  # Loop to avoid crosstalk effects with the qubits in the platinum chip
+            e.targets = [target]
+            t2_output = e.t2(
+                delay_between_pulses_start=4,
+                delay_between_pulses_end=60_000,
+                delay_between_pulses_step=800,
+                relaxation_time=200_000,
+                nshots=200,
+            )
+    
+            check_chi2(t2_output, platform=e.platform, targets=f"{target}")
+        
         report(e.path, e.history)
+
 
 
 if __name__ == "__main__":

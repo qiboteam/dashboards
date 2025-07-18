@@ -35,7 +35,6 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     for task_id, result in out.history.items():
         task_id = task_id.id
         metric = METRICS[task_id]
-
         metric_values = getattr(result.results, metric)
         for qubit_id, qubit_metric in metric_values.items():
             if isinstance(qubit_metric, list):
