@@ -39,7 +39,7 @@ class SlurmJobInfo:
         if self.platform is None:
             self.platform = "dummy"
         if self.targets is None:
-            self.targets = [0]
+            self.targets = ["0"]
 
 
 def generate_monitoring_script(
