@@ -29,7 +29,7 @@ class SlurmJobInfo:
     platform: Optional[str]
     """Qibolab platform on which to run the monitoring script.
     If set to None, default to dummy."""
-    targets: Optional[list[str]]
+    targets: Optional[list[str] | list[int]]
     """List of targets to be monitored."""
     qibolab_platforms_path: Path
     """Path of the platforms for qibolab."""
@@ -65,7 +65,7 @@ def generate_monitoring_script(
     monitoring_script = template.render(
         slurm_partition=job_info.partition,
         platform=job_info.platform,
-        targets=" ".join(job_info.targets),
+        targets=" ".join(map(str, job_info.targets)),
         report_path=report_save_path,
         qibolab_platforms_path=job_info.qibolab_platforms_path,
         monitoring_script_path=Path(__file__).parents[1] / "scripts" / "monitoring.py",
