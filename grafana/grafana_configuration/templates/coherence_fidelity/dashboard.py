@@ -63,6 +63,7 @@ class CoherenceFidelityDashboard(Dashboard):
                 metrics=fidelity_metrics,
                 title=f"Qubit {qubit}",
                 unit="percentunit",
+                axis_soft_max=1,
             ).right_of(previous)
             previous = group
             fidelity_row.add_group(group)

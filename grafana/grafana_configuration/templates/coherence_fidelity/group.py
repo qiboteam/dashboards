@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 from grafana_configuration.dashboard_elements.group import Group
 from grafana_configuration.dashboard_elements.metric import Metric
@@ -13,6 +14,7 @@ class CoherenceFidelityGroup(Group):
     metrics: list[Metric] = field(default_factory=list)
     title: str = ""
     unit: str = ""
+    axis_soft_max: Optional[float] = None
 
     def __post_init__(self):
         stat_panel = Stat(
@@ -27,5 +29,6 @@ class CoherenceFidelityGroup(Group):
             unit=self.unit,
             **TIMESERIES_PANEL_SIZE,
             targets=[p.to_target() for p in self.metrics],
+            axisSoftMax=self.axis_soft_max,
         ).below(stat_panel)
         self.panels.extend([stat_panel, timeseries_panel])
