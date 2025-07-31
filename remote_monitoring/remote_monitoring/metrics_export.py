@@ -36,12 +36,10 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     calibration = Calibration.model_validate_json(
         (qibocal_output_folder / "new_platform" / "calibration.json").read_text()
     )
-    for qubit_id in [0]:
-        qpu_data[qubit_id]["t1"] = calibration.single_qubits[qubit_id].t1[0]
-        qpu_data[qubit_id]["t2"] = calibration.single_qubits[qubit_id].t2[0]
-        qpu_data[qubit_id]["assignment_fidelity"] = calibration.single_qubits[
-            qubit_id
-        ].readout.fidelity
+    for qubit_id, qubit_calibration in calibration.single_qubits.items():
+        qpu_data[qubit_id]["t1"] = qubit_calibration.t1[0]
+        qpu_data[qubit_id]["t2"] = qubit_calibration.t2[0]
+        qpu_data[qubit_id]["assignment_fidelity"] = qubit_calibration.readout.fidelity
     return QpuData(qpu_data, acquisition_time)
 
 
