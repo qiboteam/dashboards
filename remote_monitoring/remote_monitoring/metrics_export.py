@@ -13,7 +13,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from .database_schema import Base, Qubit
-from .experiments import METRICS
 
 
 @dataclass
