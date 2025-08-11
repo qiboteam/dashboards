@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from qibocal.auto.output import Output
-from qibocal.calibration.calibration import Calibration
+from qibocal.calibration.calibration import Calibration, CALIBRATION
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -33,7 +33,7 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     qpu_data = collections.defaultdict(dict)
 
     calibration = Calibration.model_validate_json(
-        (qibocal_output_folder / "new_platform" / "calibration.json").read_text()
+        (qibocal_output_folder / "new_platform" /  CALIBRATION ).read_text()
     )
     for qubit_id, qubit_calibration in calibration.single_qubits.items():
         qpu_data[qubit_id]["t1"] = qubit_calibration.t1[0]
