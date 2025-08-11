@@ -38,7 +38,7 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     for qubit_id, qubit_calibration in calibration.single_qubits.items():
         qpu_data[qubit_id]["t1"] = qubit_calibration.t1[0]
         qpu_data[qubit_id]["t2"] = qubit_calibration.t2[0]
-        qpu_data[qubit_id]["assignment_fidelity"] = qubit_calibration.readout.fidelity
+        qpu_data[qubit_id]["assignment_fidelity"] = qubit_calibration.readout.assignment_fidelity
     return QpuData(qpu_data, acquisition_time)
 
 
