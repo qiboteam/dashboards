@@ -8,11 +8,11 @@ from pathlib import Path
 from typing import Any
 
 from qibocal.auto.output import Output
+from qibocal.calibration.calibration import Calibration, CALIBRATION
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from .database_schema import Base, Qubit
-from .experiments import METRICS
 
 
 @dataclass
@@ -32,14 +32,13 @@ def get_data(qibocal_output_folder: Path) -> QpuData:
     acquisition_time = report_meta.start_time
     qpu_data = collections.defaultdict(dict)
 
-    for task_id, result in out.history.items():
-        task_id = task_id.id
-        metric = METRICS[task_id]
-        metric_values = getattr(result.results, metric)
-        for qubit_id, qubit_metric in metric_values.items():
-            if isinstance(qubit_metric, list):
-                qubit_metric = qubit_metric[0]
-            qpu_data[qubit_id][metric] = qubit_metric
+    calibration = Calibration.model_validate_json(
+        (qibocal_output_folder / "new_platform" /  CALIBRATION ).read_text()
+    )
+    for qubit_id, qubit_calibration in calibration.single_qubits.items():
+        qpu_data[qubit_id]["t1"] = qubit_calibration.t1[0]
+        qpu_data[qubit_id]["t2"] = qubit_calibration.t2[0]
+        qpu_data[qubit_id]["assignment_fidelity"] = qubit_calibration.readout.assignment_fidelity
     return QpuData(qpu_data, acquisition_time)
 
 
